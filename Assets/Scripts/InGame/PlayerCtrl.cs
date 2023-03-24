@@ -13,7 +13,6 @@ public class PlayerCtrl : MonoBehaviour
 
     public static NPC currentNPC = null;
 
-    public GameObject XROrigin;
     public new GameObject camera;
     // public Transform camera_offset;
     public Light flashLight;
@@ -57,7 +56,6 @@ public class PlayerCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        XROrigin.transform.position = this.transform.position;
         flashLight.transform.position = camera.transform.position;
         flashLight.transform.rotation = Quaternion.Euler(camera.transform.rotation.eulerAngles);
         CheckNPC();
@@ -66,29 +64,11 @@ public class PlayerCtrl : MonoBehaviour
             StartCoroutine("ChangeHaertRate");
     }
 
-    public void OnMovementChanged(InputAction.CallbackContext context)
-    {
-        Vector2 direction = context.ReadValue<Vector2>();
-        moveVec = new Vector3(direction.x, 0, direction.y);
-    }
-
-    public void OnSitDownChanged(InputAction.CallbackContext context)
-    {
-        isSitDown = !isSitDown;
-    }
-
-    public void OnFlashChanged(InputAction.CallbackContext context)
-    {
-        isFlashOn = !isFlashOn;
-        flashLight.gameObject.SetActive(isFlashOn);
-    }
-
     public void MoveCtrl()
     {
         if (isLockMove) return;
 
-        transform.rotation = Quaternion.Euler(Vector3.up * camera.transform.rotation.eulerAngles.y);
-        transform.position += (transform.right * moveVec.x + transform.forward * moveVec.z) * moveSpeed * Time.deltaTime;
+        transform.position += camera.transform.forward * moveSpeed * Time.deltaTime;
     }
 
     /*

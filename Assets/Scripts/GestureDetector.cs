@@ -13,12 +13,20 @@ public struct Gesture
 
 public class GestureDetector : MonoBehaviour
 {
-    public float threshold = 0.1f;
+    const float threshold = 0.1f;
+    const float checkArmTime = 0.5f;
+
     public OVRSkeleton skeleton;
     public List<Gesture> gestures;
     public bool debugMode = true;
+    [SerializeField] private bool isArmShaking;
     private List<OVRBone> fingerBones;
+    private List<Vector3> leftArmVecs = new List<Vector3>();
+    private List<Vector3> rightArmVecs = new List<Vector3>();
     private Gesture previousGesture;
+
+    // Temp Variables
+    List<bool> bool_list = new List<bool>();
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +37,7 @@ public class GestureDetector : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (CheckArmShaking())
+        if (isArmShaking)
         {
             // Move Forward!
             InGameController.instance.playerCtrl.MoveCtrl();
@@ -58,6 +66,44 @@ public class GestureDetector : MonoBehaviour
         }
     }
 
+    IEnumerator CheckArmShaking()
+    {
+        bool armShaking = false;
+        float time = 0f;
+        bool_list.Clear();
+
+        // Collect Datas
+        while (time < checkArmTime)
+        {
+            bool_list.Add(skeleton.IsDataHighConfidence);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        // Check Datas
+        if (bool_list.Count != 0)
+        {
+            bool isDisable = false, isAnable = false;
+            foreach (var isOn in bool_list)
+            {
+                if (isOn)
+                    isDisable = true;
+                else
+                    isAnable = true;
+
+                if (isDisable && isAnable)
+                {
+                    armShaking = true;
+                    break;
+                }
+            }
+        }
+
+        isArmShaking = armShaking;
+        Debug.Log("ÆÈ Èçµé¸² »óÅÂ: " + isArmShaking);
+        StartCoroutine("CheckArmShaking");
+    }
+
     IEnumerator FindFingerBones()
     {
         fingerBones = new List<OVRBone>(skeleton.Bones);
@@ -68,6 +114,7 @@ public class GestureDetector : MonoBehaviour
             yield return null;
         }
         Debug.Log("Finding finger bones is done.");
+        // StartCoroutine("CheckArmShaking");
     }
     
     private void Save()
@@ -115,16 +162,5 @@ public class GestureDetector : MonoBehaviour
         }
 
         return currentGesture;
-    }
-
-    
-
-    private bool CheckArmShaking()
-    {
-        bool isArmShaking = false;
-
-        
-
-        return isArmShaking;
     }
 }

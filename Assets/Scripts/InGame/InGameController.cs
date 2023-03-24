@@ -10,7 +10,7 @@ public class InGameController : MonoBehaviour
     private const int AFTERNOON_PLAYTIME = 60 * 3; // 실제 플레이 시간
     private const int NIGHT_PLAYTIME = 60 * 3; // 실제 플레이 시간
     private const float SKYBOX_EXPOSUTE_MAX = 3.0f;
-    private const float SKYBOX_EXPOSUTE_MIN = 0.1f;
+    private const float SKYBOX_EXPOSUTE_MIN = 0.1f * 10;
     private const float DIRECT_INTENSITY_MAX = 1.0f;
     private const float DIRECT_INTENSITY_MIN = 0.1f;
     private const float TIME_PASS_SPEED = 1f;
@@ -61,6 +61,7 @@ public class InGameController : MonoBehaviour
         instance = this;
         npcs = npcParent.GetComponentsInChildren<NPC>();
         gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
         for (int i = 0; i < gameObjects.Length; i++)
         {
             if (gameObjects[i].name.Contains("light") || gameObjects[i].name.Contains("Light"))
