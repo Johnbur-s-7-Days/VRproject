@@ -20,7 +20,6 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 /// <summary>
 /// An object that can be grabbed and thrown by OVRGrabber.
@@ -117,24 +116,11 @@ public class OVRGrabbable : MonoBehaviour
 	/// <summary>
 	/// Notifies the object that it has been grabbed.
 	/// </summary>
-    /// 
 	virtual public void GrabBegin(OVRGrabber hand, Collider grabPoint)
     {
         m_grabbedBy = hand;
         m_grabbedCollider = grabPoint;
         gameObject.GetComponent<Rigidbody>().isKinematic = true;
-
-        //Add for Incentory
-        if (gameObject.GetComponent<Item>() == null) return;
-        if (gameObject.GetComponent<Item>().inSlot)
-        {
-            gameObject.GetComponentInParent<Slot>().ItemInSlot = null;
-            gameObject.transform.parent = null;
-            gameObject.GetComponentInParent<Item>().inSlot = false;
-            gameObject.GetComponentInParent<Item>().currentSlot.ResetColor();
-            gameObject.GetComponentInParent<Item>().currentSlot = null;
-        }
-        
     }
 
 	/// <summary>

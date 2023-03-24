@@ -71,6 +71,12 @@ public class PlayerCtrl : MonoBehaviour
         transform.position += camera.transform.forward * moveSpeed * Time.deltaTime;
     }
 
+    public void FlashOnOff()
+    {
+        isFlashOn = !isFlashOn;
+        flashLight.gameObject.SetActive(isFlashOn);
+    }
+
     /*
     public void SitDown()
     {

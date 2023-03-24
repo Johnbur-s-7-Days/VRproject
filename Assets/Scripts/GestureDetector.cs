@@ -13,17 +13,22 @@ public struct Gesture
 
 public class GestureDetector : MonoBehaviour
 {
-    const float threshold = 0.1f;
-    const float checkArmTime = 0.5f;
+    const float threshold = 0.05f;
+    const float armShaking_listTime = 0.5f;
+    const float armShaking_checkTime = 0.1f;
+    const float armShakingY_min = 0.1f;
+    const float armShakingZ_min = 0.0025f;
 
     public OVRSkeleton skeleton;
     public List<Gesture> gestures;
     public bool debugMode = true;
-    [SerializeField] private bool isArmShaking;
     private List<OVRBone> fingerBones;
+    private Gesture previousGesture;
+
+    [SerializeField] private bool isArmShaking;
+    [SerializeField] private GameObject leftArm, rightArm;
     private List<Vector3> leftArmVecs = new List<Vector3>();
     private List<Vector3> rightArmVecs = new List<Vector3>();
-    private Gesture previousGesture;
 
     // Temp Variables
     List<bool> bool_list = new List<bool>();
@@ -53,19 +58,93 @@ public class GestureDetector : MonoBehaviour
             Save();
         }
 
+        SetArmLists();
         Gesture currentGesture = Recognize();
-        // bool hasRecognized = !currentGesture.Equals(new Gesture());
-        bool hasRecognized = false;
+        bool hasRecognized = !currentGesture.Equals(new Gesture());
         // Check New Gesture
         if (hasRecognized && !currentGesture.Equals(previousGesture))
         {
             // New Gesture!
+            bool isInvoke = true;
             Debug.Log("New Gesture Found : " + currentGesture.name);
+            if (currentGesture.name == "Flash_1" || (previousGesture.name == "Flash_1" && currentGesture.name != "Flash_2"))
+                isInvoke = false;
+
             previousGesture = currentGesture;
-            currentGesture.onRecognized.Invoke();
+            if (isInvoke)
+                currentGesture.onRecognized.Invoke();
         }
     }
 
+    private void SetArmLists()
+    {
+        if (leftArm == null || rightArm == null)
+        {
+            Debug.LogError("Error: No arm is found!");
+            return;
+        }
+
+        leftArmVecs.Add(leftArm.transform.localPosition);
+        rightArmVecs.Add(rightArm.transform.localPosition);
+
+        while (leftArmVecs.Count > armShaking_listTime / Time.deltaTime)
+            leftArmVecs.RemoveAt(0);
+        while (rightArmVecs.Count > armShaking_listTime / Time.deltaTime)
+            rightArmVecs.RemoveAt(0);
+    }
+
+    IEnumerator CheckArmShaking()
+    {
+        bool leftArmShaking = false, rightArmShaking = false;
+        float maxY, minY;
+        float maxZ, minZ;
+        int leftMinY_index = 0, rightMinY_index = 0;
+
+        if (leftArmVecs.Count > 0)
+        {
+            // Setting Left Arm Data
+            minY = maxY = leftArmVecs[0].y;
+            maxZ = minZ = leftArmVecs[0].z;
+            for (int i = 0; i < leftArmVecs.Count; i++)
+            {
+                Vector3 vec = leftArmVecs[i];
+                if (minY > vec.y) { minY = vec.y; leftMinY_index = i; }
+                if (maxY < vec.y) maxY = vec.y;
+                if (minZ > vec.z) minZ = vec.z;
+                if (maxZ < vec.z) maxZ = vec.z;
+            }
+
+            // Check Left Arm Shaking
+            if (Mathf.Abs(maxY - minY) > armShakingY_min && Mathf.Abs(maxZ - minZ) > armShakingZ_min)
+                leftArmShaking = true;
+        }
+
+        if (rightArmVecs.Count > 0)
+        {
+            // Setting Right Arm Data
+            minY = maxY = rightArmVecs[0].y;
+            maxZ = minZ = rightArmVecs[0].z;
+            for (int i = 0; i < rightArmVecs.Count; i++)
+            {
+                Vector3 vec = rightArmVecs[i];
+                if (minY > vec.y) { minY = vec.y; rightMinY_index = i; }
+                if (maxY < vec.y) maxY = vec.y;
+                if (minZ > vec.z) minZ = vec.z;
+                if (maxZ < vec.z) maxZ = vec.z;
+            }
+
+            // Check Right Arm Shaking
+            if (Mathf.Abs(maxY - minY) > armShakingY_min && Mathf.Abs(maxZ - minZ) > armShakingZ_min)
+                rightArmShaking = true;
+        }
+
+        isArmShaking = leftArmShaking && rightArmShaking && Mathf.Abs(leftMinY_index - rightMinY_index) > 0.1f / Time.deltaTime;
+
+        yield return new WaitForSeconds(armShaking_checkTime);
+        StartCoroutine("CheckArmShaking");
+    }
+
+    /*
     IEnumerator CheckArmShaking()
     {
         bool armShaking = false;
@@ -73,7 +152,7 @@ public class GestureDetector : MonoBehaviour
         bool_list.Clear();
 
         // Collect Datas
-        while (time < checkArmTime)
+        while (time < armShakingTime)
         {
             bool_list.Add(skeleton.IsDataHighConfidence);
             time += Time.deltaTime;
@@ -103,6 +182,7 @@ public class GestureDetector : MonoBehaviour
         Debug.Log("ÆÈ Èçµé¸² »óÅÂ: " + isArmShaking);
         StartCoroutine("CheckArmShaking");
     }
+    */
 
     IEnumerator FindFingerBones()
     {
@@ -114,7 +194,7 @@ public class GestureDetector : MonoBehaviour
             yield return null;
         }
         Debug.Log("Finding finger bones is done.");
-        // StartCoroutine("CheckArmShaking");
+        StartCoroutine("CheckArmShaking");
     }
     
     private void Save()
