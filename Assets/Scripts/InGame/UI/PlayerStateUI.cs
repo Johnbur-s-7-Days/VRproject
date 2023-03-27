@@ -16,7 +16,6 @@ public class PlayerStateUI : MonoBehaviour
         }
     }
 
-    private PlayerCtrl playerCtrl;
     public Image fillImage;
     public TMP_Text heartRateText;
 
@@ -27,8 +26,6 @@ public class PlayerStateUI : MonoBehaviour
     {
         if (instance == null)
             instance = this;
-
-        playerCtrl = InGameController.instance.playerCtrl;
 
         isOn = true;
         fillImage.fillAmount = 0.5f;
@@ -45,8 +42,8 @@ public class PlayerStateUI : MonoBehaviour
 
     private void ShowHeartRate()
     {
-        float gap = ((playerCtrl.heartRate_current - playerCtrl.heartRate_minpoint) / (PlayerCtrl.HEARTRATE_GAP * 2f)) - fillImage.fillAmount;
+        float gap = ((PlayerCtrl.instance.heartRate_current - PlayerCtrl.instance.heartRate_minpoint) / (PlayerCtrl.HEARTRATE_GAP * 2f)) - fillImage.fillAmount;
         fillImage.fillAmount += gap * MOVESPEED * Time.deltaTime;
-        heartRateText.text = playerCtrl.heartRate_current.ToString();
+        heartRateText.text = PlayerCtrl.instance.heartRate_current.ToString();
     }
 }

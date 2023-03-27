@@ -17,7 +17,6 @@ public class ItemObject : MonoBehaviour
     public LineType lineType;
     public LineCode lineCode;
     public bool isActive, isCanGet;
-    public ITEM_TYPE itemType;
     public int itemCode;
 
     // Start is called before the first frame update
@@ -69,20 +68,12 @@ public class ItemObject : MonoBehaviour
 
         if (!isCanGet)
         {
-            InGameController.instance.SetAudio(1);
+            MapCtrl.instance.SetAudio(1);
             return;
         }
 
-        InGameController.instance.SetAudio(0);
-        switch (itemType)
-        {
-            case ITEM_TYPE.PUZZLE:
-                SaveCtrl.Instance.myData.hasPuzzles[itemCode] = true;
-                break;
-            case ITEM_TYPE.ETC:
-                SaveCtrl.Instance.myData.hasItems[itemCode] = true;
-                break;
-        }
+        MapCtrl.instance.SetAudio(0);
+        PlayerCtrl.instance.hasPuzzles[itemCode] = true;
         Destroy(this.gameObject);
     }
 
