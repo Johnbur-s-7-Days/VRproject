@@ -15,10 +15,6 @@ public class NPC : MonoBehaviour
     private Animator animator;
     private Rigidbody rigid;
     private NavMeshAgent nav;
-    private PlayerCtrl player;
-    public NameTag nameTag;
-    public Dialog dialog;
-    public Quest quest;
 
     public Transform[] destinations;
     private Vector3 currentDestination;
@@ -46,10 +42,9 @@ public class NPC : MonoBehaviour
         animator = this.GetComponent<Animator>();
         rigid = this.GetComponent<Rigidbody>();
         nav = this.GetComponent<NavMeshAgent>();
-        player = InGameController.instance.playerCtrl;
+
 
         grabInteractable.trackPosition = grabInteractable.trackRotation = false;
-        grabInteractable.selectEntered.AddListener(Interaction_Enter);
         isWalking = false;
         isDialog = false;
         isRePath = false;
@@ -73,7 +68,7 @@ public class NPC : MonoBehaviour
             case NPC_MODE.IDLE:
                 break;
             case NPC_MODE.CHASE:
-                GotoTarget(player.transform.position);
+                GotoTarget(PlayerCtrl.instance.transform.position);
                 break;
             case NPC_MODE.RANDOM:
                 if (CheckRemainingDistance() && !isRePath)
@@ -84,15 +79,7 @@ public class NPC : MonoBehaviour
                     Invoke("GotoTarget", 3f);
                 }
                 break;
-            case NPC_MODE.DIALOG:
-
-                break;
         }
-    }
-
-    public void Interaction_Enter(SelectEnterEventArgs args)
-    {
-        mode = NPC_MODE.DIALOG;
     }
 
     private void FreezeVelocity()
@@ -127,12 +114,6 @@ public class NPC : MonoBehaviour
                 isWalking = true;
                 nav.speed = WALK_SPEED;
                 GotoTarget();
-                break;
-            case NPC_MODE.DIALOG:
-                // Time.timeScale = 0f;
-                isWalking = false;
-                nav.isStopped = true;
-                this.transform.rotation = Quaternion.Euler(new Vector3(0f, player.GetComponent<Camera>().transform.rotation.eulerAngles.y + 180f, 0f));
                 break;
         }
 

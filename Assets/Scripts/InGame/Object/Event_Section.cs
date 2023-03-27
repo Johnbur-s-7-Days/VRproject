@@ -18,7 +18,7 @@ public class Event_Section : MonoBehaviour
         col = this.GetComponentInChildren<BoxCollider>();
         audioSource = this.GetComponentInChildren<AudioSource>();
 
-        @event = QuestCtrl.events[eventCode];
+        @event = QuestCtrl.instance.events[eventCode];
         if (eventObject != null)
             eventObject.SetActive(false);
         SetSection(true);

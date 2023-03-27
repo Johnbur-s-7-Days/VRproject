@@ -116,7 +116,7 @@ public class SceneCtrl : MonoBehaviour
         yield return new WaitForSeconds(fadeInTime);
 
         FadeOut();
-        InGameController.instance.playerCtrl.transform.position = _pos;
+        PlayerCtrl.instance.transform.position = _pos;
         Camera.main.transform.position = _pos + new Vector3Int(0, 0, -10);
         animator.speed = 1f / fadeOutTime;
 
@@ -134,7 +134,7 @@ public class SceneCtrl : MonoBehaviour
         yield return new WaitForSeconds(fadeInTime);
 
         FadeOut();
-        InGameController.instance.playerCtrl.transform.position = _pos;
+        PlayerCtrl.instance.transform.position = _pos;
         animator.speed = 1f / fadeOutTime;
         Camera.main.transform.position = _pos + new Vector3Int(0, 0, -10);
 

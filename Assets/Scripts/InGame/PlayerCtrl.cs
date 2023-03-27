@@ -5,25 +5,36 @@ using UnityEngine.InputSystem;
 
 public class PlayerCtrl : MonoBehaviour
 {
-    private const float CAMERA_Y_IDLE = 0f;
-    private const float CAMERA_Y_CROUCH = -1f;
     private const float MOVESPEED_IDLE = 2f;
-    private const float MOVESPEED_SLOW = 0.5f;
     public const int HEARTRATE_GAP = 30;
 
+    private static PlayerCtrl Instance;
+    public static PlayerCtrl instance
+    {
+        get
+        {
+            return Instance;
+        }
+        set
+        {
+            if (Instance == null)
+                Instance = value;
+        }
+    }
     public static NPC currentNPC = null;
 
     public new GameObject camera;
+    public HandTrigger leftHand;
+    public HandTrigger rightHand;
     // public Transform camera_offset;
     public Light flashLight;
+    public bool[] hasPuzzles;
 
     public int heartRate_midpoint; // 중간(시작) 심박수
     public int heartRate_minpoint, heartRate_maxpoint; // 최소 및 최대 심박수
     public int heartRate_current; // 현재 심박수
 
-    private Vector3 moveVec;
     private float moveSpeed;
-    private bool isSitDown;
 
     private float detectedDis;
     private bool isLockMove, isLockInteract;
@@ -36,6 +47,7 @@ public class PlayerCtrl : MonoBehaviour
 
     void Awake()
     {
+        instance = this;
         heartRate_current = 110;
         heartRate_midpoint = heartRate_current;
         heartRate_maxpoint = heartRate_midpoint + HEARTRATE_GAP;
@@ -45,6 +57,7 @@ public class PlayerCtrl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        hasPuzzles = new bool[DataPool.puzzleNum];
         moveSpeed = MOVESPEED_IDLE;
         detectedDis = 1.5f;
         isFlashOn = false;
@@ -77,23 +90,6 @@ public class PlayerCtrl : MonoBehaviour
         flashLight.gameObject.SetActive(isFlashOn);
     }
 
-    /*
-    public void SitDown()
-    {
-        if (isLockMove) return;
-        if (isSitDown)
-        {
-            camera_offset.localPosition = new Vector3(0f, CAMERA_Y_CROUCH, 0f);
-            moveSpeed = MOVESPEED_SLOW;
-        }
-        else
-        {
-            camera_offset.localPosition = new Vector3(0f, CAMERA_Y_IDLE, 0f);
-            moveSpeed = MOVESPEED_IDLE;
-        }
-    }
-    */
-
     public void CheckNPC()
     {
         // 전방에 NPC가 있는지 체크 
@@ -102,17 +98,13 @@ public class PlayerCtrl : MonoBehaviour
         {
             // NPC가 있다면 이름 표시
             npc = npc_hit.collider.GetComponentInParent<NPC>();
-            if (currentNPC != null && currentNPC != npc)
-                currentNPC.nameTag.SetNameUI(false);
             currentNPC = npc;
-            currentNPC.nameTag.SetNameUI(true);
         }
         else
         {
             // NPC가 없다면 이름 닫기
             if (currentNPC != null)
             {
-                currentNPC.nameTag.SetNameUI(false);
                 currentNPC = null;
             }
         }
