@@ -7,29 +7,20 @@ public class HandTrigger : MonoBehaviour
     public bool isTriggerOn;
     private Door door;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider col)
     {
         isTriggerOn = true;
 
         if (col.tag == "Door")
         {
-
+            door = col.transform.parent.GetComponent<Door>();
+            door.OpenDoor();
         }
     }
 
     private void OnTriggerExit(Collider col)
     {
         isTriggerOn = false;
-    }
-
-    public Door GetDoor()
-    {
-        return door;
+        door = null;
     }
 }

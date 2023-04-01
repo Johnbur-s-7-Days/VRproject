@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Left Hand
   - Right Hand
+  - Elevator
+  - ElevatorNumericButton
+  - ElevatorGoButton
+  - ElevatorButtonOpen
+  - Door
   layers:
   - Default
   - TransparentFX

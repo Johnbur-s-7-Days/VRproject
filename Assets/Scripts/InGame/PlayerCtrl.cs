@@ -24,8 +24,6 @@ public class PlayerCtrl : MonoBehaviour
     public static NPC currentNPC = null;
 
     public new GameObject camera;
-    public HandTrigger leftHand;
-    public HandTrigger rightHand;
     // public Transform camera_offset;
     public Light flashLight;
     public bool[] hasPuzzles;
@@ -107,20 +105,6 @@ public class PlayerCtrl : MonoBehaviour
             {
                 currentNPC = null;
             }
-        }
-    }
-
-    public void Interact()
-    {
-        if (isLockInteract) return;
-
-        // 전방에 Door
-        RaycastHit door_hit;
-        if (Physics.Raycast(camera.transform.position, camera.transform.forward, out door_hit, detectedDis, 1024))
-        {
-            // Door가 있다면 ON/OFF
-            door = door_hit.collider.GetComponentInParent<Door>();
-            door.Player_Interact();
         }
     }
 

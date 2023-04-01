@@ -30,11 +30,8 @@ public class NPC : MonoBehaviour
         }
     }
 
-    private bool isWalking, isDialog;
+    private bool isWalking;
     private bool isRePath;
-
-    // Temp ������
-    Door currentDoor;
 
     void Start()
     {
@@ -46,7 +43,6 @@ public class NPC : MonoBehaviour
 
         grabInteractable.trackPosition = grabInteractable.trackRotation = false;
         isWalking = false;
-        isDialog = false;
         isRePath = false;
         if (this.name.Contains("IDLE"))
             mode = NPC_MODE.IDLE;
