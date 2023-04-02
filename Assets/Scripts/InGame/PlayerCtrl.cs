@@ -24,7 +24,6 @@ public class PlayerCtrl : MonoBehaviour
     public static NPC currentNPC = null;
 
     public new GameObject camera;
-    // public Transform camera_offset;
     public Light flashLight;
     public bool[] hasPuzzles;
 

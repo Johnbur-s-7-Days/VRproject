@@ -70,13 +70,33 @@ public class GestureDetector : MonoBehaviour
             // New Gesture!
             bool isInvoke = true;
             Debug.Log("New Gesture Found : " + currentGesture.name);
-            if (currentGesture.name == "Flash_1" || (previousGesture.name == "Flash_1" && currentGesture.name != "Flash_2"))
+
+            // Function is not work!
+            if (currentGesture.name == "Flash_1" || (currentGesture.name == "Flash_2" && previousGesture.name != "Flash_1"))
                 isInvoke = false;
+
+            // Function is work!
+            if (currentGesture.name == "Flash_2" && previousGesture.name == "Flash_1")
+                isInvoke = CheckFlashOnOff();
 
             previousGesture = currentGesture;
             if (isInvoke)
                 currentGesture.onRecognized.Invoke();
         }
+    }
+
+    private bool CheckFlashOnOff()
+    {
+        bool isOn = false;
+        Vector3 lookVec = PlayerCtrl.instance.camera.transform.forward.normalized;
+        Vector3 planeNormal = Vector3.Cross(Vector3.up, lookVec).normalized;
+        Vector3 armVec = Vector3.ProjectOnPlane(rightArm.transform.up, planeNormal).normalized;
+
+        Debug.Log("¼Õ°¡¶ô Æ¨±â±â ³»Àû : " + Vector3.Dot(armVec, lookVec));
+        if (Vector3.Dot(armVec, lookVec) > 0f)
+            isOn = true;
+
+        return isOn;
     }
 
     private void SetArmLists()
@@ -146,46 +166,6 @@ public class GestureDetector : MonoBehaviour
         yield return new WaitForSeconds(armShaking_checkTime);
         StartCoroutine("CheckArmShaking");
     }
-
-    /*
-    IEnumerator CheckArmShaking()
-    {
-        bool armShaking = false;
-        float time = 0f;
-        bool_list.Clear();
-
-        // Collect Datas
-        while (time < armShakingTime)
-        {
-            bool_list.Add(skeleton.IsDataHighConfidence);
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        // Check Datas
-        if (bool_list.Count != 0)
-        {
-            bool isDisable = false, isAnable = false;
-            foreach (var isOn in bool_list)
-            {
-                if (isOn)
-                    isDisable = true;
-                else
-                    isAnable = true;
-
-                if (isDisable && isAnable)
-                {
-                    armShaking = true;
-                    break;
-                }
-            }
-        }
-
-        isArmShaking = armShaking;
-        Debug.Log("ÆÈ Èçµé¸² »óÅÂ: " + isArmShaking);
-        StartCoroutine("CheckArmShaking");
-    }
-    */
 
     IEnumerator FindFingerBones()
     {
