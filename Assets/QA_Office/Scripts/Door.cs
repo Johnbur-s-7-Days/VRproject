@@ -10,6 +10,7 @@ public class Door : MonoBehaviour
     }
 
 	private Animation anim;
+	private new AudioSource audio;
 	public DoorType doorType;
 	public float OpenSpeed;
 	public bool isOpen;
@@ -22,6 +23,9 @@ public class Door : MonoBehaviour
 	void Start()
 	{
 		anim = GetComponent<Animation>();
+		audio = GetComponent<AudioSource>();
+		if (audio == null) 
+			audio = this.gameObject.AddComponent<AudioSource>();
 		_animName = anim.clip.name;
 		OpenSpeed = 1f;
 		OpenForwardAnimName = "DoorForward_Open";
@@ -35,7 +39,7 @@ public class Door : MonoBehaviour
 		if (isOpen)
 			return;
 
-		relativePos = gameObject.transform.InverseTransformPoint(PlayerCtrl.instance.transform.position);
+		relativePos = gameObject.transform.InverseTransformPoint(PlayerCtrl.instance.camera.transform.position);
 		if (relativePos.z > 0)
 		{
 			if (doorType == DoorType.LEFT)
@@ -51,8 +55,9 @@ public class Door : MonoBehaviour
 				_animName = OpenForwardAnimName;
 		}
 
-		Debug.Log(doorType + " / Open");
 		isOpen = true;
+		audio.clip = DataPool.SEs[3];
+		audio.Play();
 		anim[_animName].speed = 1 * OpenSpeed;
 		anim[_animName].normalizedTime = 0;
 		anim.Play(_animName);

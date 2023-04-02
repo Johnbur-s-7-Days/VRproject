@@ -5,16 +5,15 @@ using UnityEngine;
 public class HandTrigger : MonoBehaviour
 {
     public bool isTriggerOn;
-    private Door door;
+    public Door door;
 
-    private void OnTriggerEnter(Collider col)
+    private void OnTriggerStay(Collider col)
     {
         isTriggerOn = true;
-
         if (col.tag == "Door")
         {
-            door = col.transform.parent.GetComponent<Door>();
-            door.OpenDoor();
+            if (door == null)
+                door = col.transform.parent.GetComponent<Door>();
         }
     }
 
