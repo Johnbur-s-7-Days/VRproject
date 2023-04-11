@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerCtrl : MonoBehaviour
 {
-    private const float MOVESPEED_IDLE = 2f;
     public const int HEARTRATE_GAP = 30;
 
     private static PlayerCtrl Instance;
@@ -24,14 +23,13 @@ public class PlayerCtrl : MonoBehaviour
     public static NPC currentNPC = null;
 
     public new GameObject camera;
+    public Rigidbody rigid;
     public Light flashLight;
     public bool[] hasPuzzles;
 
     public int heartRate_midpoint; // 중간(시작) 심박수
     public int heartRate_minpoint, heartRate_maxpoint; // 최소 및 최대 심박수
     public int heartRate_current; // 현재 심박수
-
-    private float moveSpeed;
 
     private float detectedDis;
     private bool isLockMove, isLockInteract;
@@ -55,7 +53,6 @@ public class PlayerCtrl : MonoBehaviour
     void Start()
     {
         hasPuzzles = new bool[DataPool.puzzleNum];
-        moveSpeed = MOVESPEED_IDLE;
         detectedDis = 1.5f;
         isFlashOn = false;
 
@@ -74,11 +71,12 @@ public class PlayerCtrl : MonoBehaviour
             StartCoroutine("ChangeHaertRate");
     }
 
-    public void MoveCtrl()
+    public void MoveCtrl(float moveSpeed)
     {
         if (isLockMove) return;
 
-        transform.position += camera.transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 moveVec = new Vector3(camera.transform.forward.x, 0f, camera.transform.forward.z);
+        rigid.MovePosition(this.transform.position + moveVec * moveSpeed * Time.deltaTime);
     }
 
     public void FlashOnOff()

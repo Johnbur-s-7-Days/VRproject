@@ -33,6 +33,7 @@ public class GestureDetector : MonoBehaviour
     private Gesture previousGesture;
     [SerializeField] private bool isOpenDoor_left, isOpenDoor_right; // 모션에 대한 여부일 뿐, 실행에 대한 여부는 아님
 
+    private float armShakingSpeed;
     [SerializeField] private bool isArmShaking;
     [SerializeField] private GameObject leftArm, rightArm;
     private List<Vector3> leftArmVecs = new List<Vector3>();
@@ -52,7 +53,8 @@ public class GestureDetector : MonoBehaviour
         if (isArmShaking)
         {
             // Move Forward!
-            PlayerCtrl.instance.MoveCtrl();
+            float moveSpeed = Mathf.Lerp(2f, 4f, (armShakingSpeed - 0.075f) * 5f);
+            PlayerCtrl.instance.MoveCtrl(moveSpeed);
         }
     }
 
@@ -166,12 +168,14 @@ public class GestureDetector : MonoBehaviour
 
     private bool CheckFlashOnOff()
     {
+        if (isArmShaking)
+            return false;
+
         bool isOn = false;
         Vector3 lookVec = PlayerCtrl.instance.camera.transform.forward.normalized;
         Vector3 planeNormal = Vector3.Cross(Vector3.up, lookVec).normalized;
         Vector3 armVec = Vector3.ProjectOnPlane(rightArm.transform.up, planeNormal).normalized;
 
-        Debug.Log("손가락 튕기기 내적 : " + Vector3.Dot(armVec, lookVec));
         if (Vector3.Dot(armVec, lookVec) > 0f)
             isOn = true;
 
@@ -257,6 +261,7 @@ public class GestureDetector : MonoBehaviour
                 rightArmShaking = true;
         }
 
+        armShakingSpeed = 1f / Mathf.Abs(leftMinY_index - rightMinY_index);
         isArmShaking = leftArmShaking && rightArmShaking && Mathf.Abs(leftMinY_index - rightMinY_index) > 0.1f / Time.deltaTime;
 
         yield return new WaitForSeconds(armShaking_checkTime);
