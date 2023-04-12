@@ -53,7 +53,7 @@ public class GestureDetector : MonoBehaviour
         if (isArmShaking)
         {
             // Move Forward!
-            float moveSpeed = Mathf.Lerp(2f, 4f, (armShakingSpeed - 0.075f) * 5f);
+            float moveSpeed = Mathf.Lerp(2f, 3f, (armShakingSpeed - 0.075f) * 5f);
             PlayerCtrl.instance.MoveCtrl(moveSpeed);
         }
     }

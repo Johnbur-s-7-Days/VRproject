@@ -339,9 +339,9 @@ public class Elevator : MonoBehaviour {
 				yield break;
 			}
 
-			float speed_multy = 0.75f; // 0에 가까울수록 엘리베이터 속도가 빠르다
+			float speed_multy = 0.5f; // 0에 가까울수록 엘리베이터 속도가 빠르다
 			if (FloorCount > 8)
-				speed_multy = Mathf.Lerp(0.25f, 0.5f, (float)Mathf.Abs(TargetFloor - FloorCount) / Mathf.Abs(TargetFloor - CurrentFloor));
+				speed_multy = Mathf.Lerp(0.25f, 0.4f, (float)Mathf.Abs(TargetFloor - FloorCount) / Mathf.Abs(TargetFloor - CurrentFloor));
 			moveFloorTime = OneFloorTime * speed_multy * speed_multy;
 			yield return new WaitForSeconds (moveFloorTime);
 			if (CurrentFloor < TargetFloor) {
@@ -356,7 +356,7 @@ public class Elevator : MonoBehaviour {
 				SoundFX.Stop ();
 				TargetBellSoundPlay ();
 
-				Player.transform.position = new Vector3 (Player.transform.position.x, TargetElvAnim.transform.position.y + 1f, Player.transform.position.z);
+				Player.transform.position = new Vector3 (Player.transform.position.x, TargetElvAnim.transform.position.y + 0.75f, Player.transform.position.z);
 
 				if(isReflectionProbe){
 					if(UpdateReflectionEveryFrame){
