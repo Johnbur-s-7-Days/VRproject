@@ -35,6 +35,7 @@ public class MapCtrl : MonoBehaviour
     // Temp º¯¼öµé
     GameObject[] gameObjects;
     ReflectionProbe reflection;
+    Light light;
 
     private void Awake()
     {
@@ -54,17 +55,20 @@ public class MapCtrl : MonoBehaviour
         if (audio == null)
             audio = this.gameObject.AddComponent<AudioSource>();
 
-        Debug.Log("ÃÑ " + allLights.Count + " °³ÀÇ ºû ²ô±â");
+        Debug.Log("ÃÑ " + allLights.Count + " °³ÀÇ ºû °¨Áö");
+        Debug.Log("ÃÑ " + reflections.Count + " °³ÀÇ ¹Ý»ç°æ °¨Áö");
         for (int i = 0; i < allLights.Count; i++)
-            allLights[i].gameObject.SetActive(false);
+            allLights[i].gameObject.SetActive(true);
         for (int i = 0; i < reflections.Count; i++)
-            reflections[i].enabled = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        {
+            reflections[i].enabled = true;
+            if (reflections[i].GetComponent<Light>() == null)
+            {
+                light = reflections[i].gameObject.AddComponent<Light>();
+                light.intensity = 0.25f;
+                light.type = LightType.Point;
+            }
+        }
     }
 
     /// <summary>

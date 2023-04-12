@@ -5,7 +5,6 @@ using UnityEngine;
 public class Elevator : MonoBehaviour {
 	private bool inTrigger = false;
 	private Rigidbody Player;
-	private Transform PlayerCam;
 
 	[Tooltip("Type your Player's tag here.")]
 	public string PlayerTag = "Player";
@@ -16,6 +15,7 @@ public class Elevator : MonoBehaviour {
 
 	[Tooltip("How fast the elevator 'passes' one floor. The time in seconds.")]
 	public float OneFloorTime = 1.5f;
+	private float moveFloorTime;
 
 	private float OpenDelay = 1;
 
@@ -32,7 +32,6 @@ public class Elevator : MonoBehaviour {
 	[HideInInspector]
 	public int ElevatorFloor;
 	private List<GameObject> Elevators = new List<GameObject>();
-	private Elevator[] ElevatorsScripts;
 	private Animation TargetElvAnim;
 	private TextMesh TargetElvTextInside;
 	private TextMesh TargetElvTextOutside;
@@ -50,9 +49,6 @@ public class Elevator : MonoBehaviour {
 	private bool SpeedUp = false;
 	private bool SlowDown = false;
 	private static bool Moving = false;
-	private bool isPlayer;
-	private float PlayerHeight;
-	private bool isRigidbodyCharacter;
 	private ReflectionProbe probe;
 
 	[Header("Sound Effects settings")]
@@ -89,7 +85,7 @@ public class Elevator : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Awake () {
+	void Start () {
 		if (GetComponentInChildren<ReflectionProbe> ()) {
 			probe = GetComponentInChildren<ReflectionProbe> ();
 			probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.OnAwake;
@@ -98,7 +94,6 @@ public class Elevator : MonoBehaviour {
 			isReflectionProbe = false;
 		}
 
-		isPlayer = false;
 		Moving = false;
 		BtnSoundFX = GetComponent<AudioSource> ();
 
@@ -122,9 +117,6 @@ public class Elevator : MonoBehaviour {
 		SoundFX.rolloffMode = AudioRolloffMode.Linear;
 		SoundFX.priority = 256;
 
-		//
-
-
 
 		DoorsAnim = gameObject.GetComponent<Animation> ();
 		AnimName = DoorsAnim.clip.name;
@@ -132,43 +124,23 @@ public class Elevator : MonoBehaviour {
 
 		if (GameObject.FindGameObjectWithTag (PlayerTag)) {
 
-			Player = GameObject.FindGameObjectWithTag (PlayerTag).GetComponent<Rigidbody>();
-			if(Player.gameObject.GetComponent<CapsuleCollider>()){
-				PlayerHeight = Player.gameObject.GetComponent<CapsuleCollider> ().height/2;
-				isRigidbodyCharacter = true;
-				isPlayer = true;
-			}else if(Player.gameObject.GetComponent<CharacterController>()){
-				PlayerHeight = Player.gameObject.GetComponent<CharacterController> ().height/2 + Player.gameObject.GetComponent<CharacterController> ().skinWidth;
-				isRigidbodyCharacter = false;
-				isPlayer = true;
-			}
+			Player = PlayerCtrl.instance.GetComponent<Rigidbody>();
 		} else {
 			Debug.LogWarning ("Elevator: Can't find Player. Please, check that your Player object has 'Player' tag.");
 			this.enabled = false;
-			isPlayer = false;
-		}
-
-		if(isPlayer){
-			if (Player.GetComponentInChildren<Camera>().transform) {
-				PlayerCam = Player.GetComponentInChildren<Camera>().transform;
-			} else {
-				Debug.LogWarning ("Elevator: Can't find Player's camera. Please, check that your Player have a camera parented to it.");
-				this.enabled = false;
-			}
 		}
 
 		foreach (GameObject obj in GameObject.FindGameObjectsWithTag ("Elevator")) {
 			if(obj.transform.parent == gameObject.transform.parent){
-				
 				if(obj != gameObject){
 					Elevators.Add (obj);
 				}
-
 			}
 		}
 
 		if (_elevatorManager) {
 			_elevatorManager.WasStarted += RandomInit;
+			_elevatorManager.WasStarted();
 		} else {
 			Debug.LogWarning ("Elevator: To use more than one elevator shaft, please create an empty gameobject in your scene, add the ElevatorManager.cs script on it and make elevators of one elevator shaft as child to this object. Repeate this for every different elevators shafts.");
 		}
@@ -180,7 +152,7 @@ public class Elevator : MonoBehaviour {
 			ElevatorFloor = _elevatorManager.InitialFloor;
 		} else {
 			ElevatorFloor = 1;
-			//Debug.LogWarning ("No ElevatorManager has been found for '" + gameObject.name + "'. Initial floor will be set to 1. If you want to set your own floor or make it random, please make this object child to object with ElevatorManager script.");
+			Debug.LogWarning ("No ElevatorManager has been found for '" + gameObject.name + "'. Initial floor will be set to 1. If you want to set your own floor or make it random, please make this object child to object with ElevatorManager script.");
 		}
 		TextOutside.text = ElevatorFloor.ToString();
 		TextInside.text = ElevatorFloor.ToString();
@@ -189,111 +161,6 @@ public class Elevator : MonoBehaviour {
 
 	void Update () {
 		if (inTrigger) {
-
-			RaycastHit[] hits;
-				if (Input.GetKeyDown (KeyCode.E)) {
-
-					hits = Physics.RaycastAll (PlayerCam.position, PlayerCam.forward, 3);
-
-					for (int i = 0; i < hits.Length; i++) {
-						RaycastHit hit = hits [i];
-
-					if (hit.transform.tag == "ElevatorButtonOpen" && !isOpen) {
-						BtnSoundFX.clip = ElevatorBtn;
-						BtnSoundFX.volume = ElevatorBtnVolume;
-						BtnSoundFX.Play ();
-						ElevatorOpenButton = hit.transform.GetComponent<MeshRenderer> ();
-						ElevatorOpenButton.enabled = true;
-
-						isOpen = true;
-						Invoke ("DoorsOpening", OneFloorTime * Mathf.Abs (CurrentFloor - ElevatorFloor) + OpenDelay);
-
-						FloorCount = ElevatorFloor;
-						ElevatorFloor = CurrentFloor;
-
-						foreach (GameObject elv in Elevators) {
-							Elevator elvScipt = (Elevator)elv.GetComponent (typeof(Elevator));
-							elvScipt.ElevatorFloor = CurrentFloor;
-						}
-
-						StartCoroutine ("FloorsCounter");
-					}
-
-					if (hit.transform.tag == "ElevatorNumericButton" && !Moving) {
-						InputFloor += hit.transform.name;
-						hit.transform.GetComponent<MeshRenderer> ().enabled = true;
-						ElevatorNumericButtons.Add (hit.transform.GetComponent<MeshRenderer> ());
-						BtnSoundFX.clip = ElevatorBtn;
-						BtnSoundFX.volume = ElevatorBtnVolume;
-						BtnSoundFX.Play ();
-					}
-
-					if (hit.transform.tag == "ElevatorGoButton" && !Moving) {
-						
-						if (InputFloor != "" && InputFloor.Length < 4) {
-							if (InputFloor == "0-1") {
-								InputFloor = "-99";
-							}
-							TargetFloor = int.Parse (InputFloor);
-							
-							foreach (GameObject elv in Elevators) {
-								Elevator elvScipt = (Elevator)elv.GetComponent (typeof(Elevator));
-								if (elvScipt.CurrentFloor == TargetFloor) {
-									ElvFound = true;
-									TargetElvAnim = elv.GetComponent<Animation> ();
-									TargetElvTextInside = elv.GetComponent<Elevator> ().TextInside;
-									TargetElvTextOutside = elv.GetComponent<Elevator> ().TextOutside;
-									BtnSoundFX.clip = ElevatorBtn;
-									BtnSoundFX.volume = ElevatorBtnVolume;
-									BtnSoundFX.Play ();
-									ElevatorFloor = TargetFloor;
-									elvScipt.ElevatorFloor = TargetFloor;
-
-									FloorCount = CurrentFloor;
-
-									if (CurrentFloor != ElevatorFloor) {
-										if (elvScipt.isReflectionProbe) {
-											if (elvScipt.UpdateReflectionEveryFrame) {
-												elvScipt.probe.RenderProbe ();
-											}
-										}
-										Invoke ("ElevatorGO", 1);
-										ElevatorGoBtn = hit.transform.GetComponent<MeshRenderer> ();
-										ElevatorGoBtn.enabled = true;
-										Moving = true;
-
-									} else {
-										DoorsOpening ();
-									}
-									InputFloor = "";
-								} else {
-									
-								}
-							}
-						} else {
-							ButtonsReset ();
-							InputFloor = "";
-							BtnSoundFX.clip = ElevatorError;
-							BtnSoundFX.volume = ElevatorErrorVolume;
-							BtnSoundFX.Play ();
-						}
-						if (!ElvFound) {
-							ButtonsReset ();
-							InputFloor = "";
-							BtnSoundFX.clip = ElevatorError;
-							BtnSoundFX.volume = ElevatorErrorVolume;
-							BtnSoundFX.Play ();
-						}
-						if (TargetFloor != CurrentFloor) {
-							DoorsClosing ();
-						} else if (!isOpen) {
-							DoorsOpening ();
-						}
-					}
-				}
-			}
-		
-
 			if(SpeedUp){
 				if (SoundFX.volume < ElevatorMoveVolume) {
 					SoundFX.volume += 0.9f * Time.deltaTime;
@@ -318,6 +185,126 @@ public class Elevator : MonoBehaviour {
 		}
 	}
 
+	public void OnElevatorOpen(MeshRenderer _mesh)
+    {
+		if (isOpen)
+			return;
+
+		BtnSoundFX.clip = ElevatorBtn;
+		BtnSoundFX.volume = ElevatorBtnVolume;
+		BtnSoundFX.Play();
+		ElevatorOpenButton = _mesh;
+		ElevatorOpenButton.enabled = true;
+
+		isOpen = true;
+		Invoke("DoorsOpening", OneFloorTime * Mathf.Abs(CurrentFloor - ElevatorFloor) + OpenDelay);
+
+		FloorCount = ElevatorFloor;
+		ElevatorFloor = CurrentFloor;
+
+		foreach (GameObject elv in Elevators)
+		{
+			Elevator elvScipt = (Elevator)elv.GetComponent(typeof(Elevator));
+			elvScipt.ElevatorFloor = CurrentFloor;
+		}
+
+		StartCoroutine("FloorsCounter");
+	}
+
+	public void OnElevatorNumber(string _floor, MeshRenderer _mesh)
+    {
+		if (Moving)
+			return;
+
+		InputFloor += _floor;
+		_mesh.enabled = true;
+		ElevatorNumericButtons.Add(_mesh);
+		BtnSoundFX.clip = ElevatorBtn;
+		BtnSoundFX.volume = ElevatorBtnVolume;
+		BtnSoundFX.Play();
+	}
+
+	public void OnElevatorGo(MeshRenderer _mesh)
+    {
+		if (Moving)
+			return;
+
+		if (InputFloor != "" && InputFloor.Length < 4)
+		{
+			if (InputFloor == "0-1")
+			{
+				InputFloor = "-99";
+			}
+			TargetFloor = int.Parse(InputFloor);
+
+			foreach (GameObject elv in Elevators)
+			{
+				Elevator elvScipt = (Elevator)elv.GetComponent(typeof(Elevator));
+				if (elvScipt.CurrentFloor == TargetFloor)
+				{
+					if (TargetFloor == 9)
+						TargetFloor = 44;
+
+					ElvFound = true;
+					TargetElvAnim = elv.GetComponent<Animation>();
+					TargetElvTextInside = elv.GetComponent<Elevator>().TextInside;
+					TargetElvTextOutside = elv.GetComponent<Elevator>().TextOutside;
+					BtnSoundFX.clip = ElevatorBtn;
+					BtnSoundFX.volume = ElevatorBtnVolume;
+					BtnSoundFX.Play();
+					ElevatorFloor = TargetFloor;
+					elvScipt.ElevatorFloor = TargetFloor;
+
+					FloorCount = CurrentFloor;
+
+					if (CurrentFloor != ElevatorFloor)
+					{
+						if (elvScipt.isReflectionProbe)
+						{
+							if (elvScipt.UpdateReflectionEveryFrame)
+							{
+								elvScipt.probe.RenderProbe();
+							}
+						}
+						Invoke("ElevatorGO", 1);
+						ElevatorGoBtn = _mesh;
+						ElevatorGoBtn.enabled = true;
+						Moving = true;
+					}
+					else
+					{
+						DoorsOpening();
+					}
+					InputFloor = "";
+				}
+			}
+		}
+		else
+		{
+			ButtonsReset();
+			InputFloor = "";
+			BtnSoundFX.clip = ElevatorError;
+			BtnSoundFX.volume = ElevatorErrorVolume;
+			BtnSoundFX.Play();
+		}
+		if (!ElvFound)
+		{
+			ButtonsReset();
+			InputFloor = "";
+			BtnSoundFX.clip = ElevatorError;
+			BtnSoundFX.volume = ElevatorErrorVolume;
+			BtnSoundFX.Play();
+		}
+		if (TargetFloor != CurrentFloor)
+		{
+			DoorsClosing();
+		}
+		else if (!isOpen)
+		{
+			DoorsOpening();
+		}
+	}
+
 	void ElevatorGO(){	
 
 		ElvFound = false;
@@ -328,7 +315,6 @@ public class Elevator : MonoBehaviour {
 		SoundFX.pitch = 0.5f;
 		SpeedUp = true;	
 		SoundFX.Play ();
-
 	}
 
 	void SlowDownStart(){
@@ -353,15 +339,16 @@ public class Elevator : MonoBehaviour {
 				yield break;
 			}
 
-			yield return new WaitForSeconds (OneFloorTime);
+			float speed_multy = 0.5f; // 0에 가까울수록 엘리베이터 속도가 빠르다
+			if (FloorCount > 8)
+				speed_multy = Mathf.Lerp(0.25f, 0.4f, (float)Mathf.Abs(TargetFloor - FloorCount) / Mathf.Abs(TargetFloor - CurrentFloor));
+			moveFloorTime = OneFloorTime * speed_multy * speed_multy;
+			yield return new WaitForSeconds (moveFloorTime);
 			if (CurrentFloor < TargetFloor) {
 				FloorCount++;
-
-
 			}
 			if (CurrentFloor > TargetFloor) {
 				FloorCount--;
-
 			}
 
 			if(FloorCount == TargetFloor){
@@ -369,21 +356,13 @@ public class Elevator : MonoBehaviour {
 				SoundFX.Stop ();
 				TargetBellSoundPlay ();
 
-				if (!isRigidbodyCharacter) {
-					Player.isKinematic = false;
-				}
-
-				Player.transform.position = new Vector3 (Player.transform.position.x, TargetElvAnim.transform.position.y + PlayerHeight, Player.transform.position.z);
+				Player.transform.position = new Vector3 (Player.transform.position.x, TargetElvAnim.transform.position.y + 0.75f, Player.transform.position.z);
 
 				if(isReflectionProbe){
 					if(UpdateReflectionEveryFrame){
 						probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.OnAwake;
 						probe.RenderProbe ();
 					}
-				}
-
-				if(!isRigidbodyCharacter){
-					Player.isKinematic = true;
 				}
 
 				Invoke ("TargetElvOpening", OpenDelay);
@@ -510,30 +489,6 @@ public class Elevator : MonoBehaviour {
 			if(ElevatorOpenButton != null){
 				ElevatorOpenButton.enabled = false;
 			}
-	}
-	}
-
-	void OnTriggerEnter(Collider other){
-		if(other.gameObject == Player.gameObject){
-			inTrigger = true;
-			if(isReflectionProbe){
-				if(UpdateReflectionEveryFrame){
-					probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.EveryFrame;
-					probe.RenderProbe ();
-				}
-			}
 		}
 	}
-	void OnTriggerExit(Collider other){
-		if(other.gameObject == Player.gameObject){
-			inTrigger = false;
-			if(isReflectionProbe){
-				if(UpdateReflectionEveryFrame){
-					probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.OnAwake;
-					probe.RenderProbe ();
-				}
-			}
-		}
-	}
-
 }

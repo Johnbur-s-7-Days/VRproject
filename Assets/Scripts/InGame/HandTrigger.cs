@@ -5,31 +5,21 @@ using UnityEngine;
 public class HandTrigger : MonoBehaviour
 {
     public bool isTriggerOn;
-    private Door door;
+    public Door door;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    private void OnTriggerEnter(Collider col)
+    private void OnTriggerStay(Collider col)
     {
         isTriggerOn = true;
-
         if (col.tag == "Door")
         {
-
+            if (door == null)
+                door = col.transform.parent.GetComponent<Door>();
         }
     }
 
     private void OnTriggerExit(Collider col)
     {
         isTriggerOn = false;
-    }
-
-    public Door GetDoor()
-    {
-        return door;
+        door = null;
     }
 }
