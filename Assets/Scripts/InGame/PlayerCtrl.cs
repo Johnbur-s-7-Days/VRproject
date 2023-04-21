@@ -79,9 +79,9 @@ public class PlayerCtrl : MonoBehaviour
         rigid.MovePosition(this.transform.position + moveVec * moveSpeed * Time.deltaTime);
     }
 
-    public void FlashOnOff()
+    public void FlashOn()
     {
-        isFlashOn = !isFlashOn;
+        isFlashOn = true;
         flashLight.gameObject.SetActive(isFlashOn);
     }
 
