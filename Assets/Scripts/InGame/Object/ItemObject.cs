@@ -32,8 +32,10 @@ public class ItemObject : MonoBehaviour
 
         defaultMaterials.AddRange(renderer.sharedMaterials);
         for (int i = 0; i < defaultMaterials.Count; i++)
+        {
             if (defaultMaterials[i].shader.name == Shader.Find("Outlines/BackFaceOutlines").name)
                 defaultMaterials.Remove(GetOutlineMaterial(lineType, LineCode.IDLE));
+        }
 
         SetActive(isActive);
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,8 @@ public class Slot : MonoBehaviour
     public GameObject ItemInSlot;
     public Image slotImage;
     Color originalColor;
+    public OVRHand hand;
+    private bool wasPinching = false;
 
     private void Start()
     {
@@ -20,9 +23,17 @@ public class Slot : MonoBehaviour
         if (ItemInSlot != null) return;
         GameObject obj = other.gameObject;
         if (!IsItem(obj)) return;
-        if (OVRInput.GetUp(OVRInput.Button.PrimaryHandTrigger))
+
+        //손이 추적되고 있는지 확인.
+        if (hand.IsTracked)
         {
-            InsertItem(obj);
+            if (!hand.GetFingerIsPinching(OVRHand.HandFinger.Index) && wasPinching)
+            {
+                InsertItem(obj);
+            }
+
+            // 버튼 상태 갱신
+            wasPinching = hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
         }
     }
 

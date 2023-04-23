@@ -67,8 +67,8 @@ public class PlayerCtrl : MonoBehaviour
         flashLight.transform.rotation = Quaternion.Euler(camera.transform.rotation.eulerAngles);
         CheckNPC();
 
-        if (!isChangeHeartRate)
-            StartCoroutine("ChangeHaertRate");
+        //if (!isChangeHeartRate)
+        //    StartCoroutine("ChangeHeartRate");
     }
 
     public void MoveCtrl(float moveSpeed)
