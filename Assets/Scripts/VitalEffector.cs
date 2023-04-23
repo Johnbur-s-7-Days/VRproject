@@ -7,7 +7,7 @@ public class VitalEffector : MonoBehaviour
 {
     [SerializeField] private PostProcessVolume volume;
     private Vignette vignette;
-    private float heartRate_cur, heartRate_min, heartRate_max;
+    private int heartRate_cur, heartRate_min, heartRate_max;
 
     private List<AudioSource> audioSources = new List<AudioSource>();
     private float temperature_cur, temperature_min, temperature_max;
@@ -16,12 +16,12 @@ public class VitalEffector : MonoBehaviour
     void Start()
     {
         volume.profile.TryGetSettings(out vignette);
-        heartRate_cur = 100;
-        heartRate_min = 100;
-        heartRate_max = 140;
-        temperature_cur = 36.5f;
-        temperature_min = 36.5f;
-        temperature_max = 37.5f;
+        heartRate_cur = SensorManager.HeartRate;
+        heartRate_min = SensorManager.HeartRate_Min;
+        heartRate_max = SensorManager.HeartRate_Max;
+        temperature_cur = SensorManager.TempRate;
+        temperature_min = SensorManager.TempRate_Min;
+        temperature_max = SensorManager.TempRate_Max;
 
         StartCoroutine(TestVitalEffect());
         StartCoroutine(FindAllAudios());
@@ -52,10 +52,7 @@ public class VitalEffector : MonoBehaviour
     {
         while (true)
         {
-            heartRate_cur += Time.deltaTime;
             SetSightEffect(Mathf.Lerp(0f, 1f, (heartRate_cur - heartRate_min) / (heartRate_max - heartRate_min)));
-
-            temperature_cur += Time.deltaTime * 0.05f;
             SetEarEffect(Mathf.Lerp(1f, 1.5f, (temperature_cur - temperature_min) / (temperature_max - temperature_min)));
             yield return null;
         }

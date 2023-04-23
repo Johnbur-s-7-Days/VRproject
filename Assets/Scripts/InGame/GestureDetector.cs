@@ -30,11 +30,15 @@ public class GestureDetector : MonoBehaviour
     public List<Gesture> gestures;
     public bool debugMode = true;
     private List<OVRBone> leftFingerBones, rightFingerBones;
-    private Gesture previousGesture;
+    private Gesture previousRightGesture;
+    private Gesture previousLeftGesture;
     [SerializeField] private bool isOpenDoor_left, isOpenDoor_right; // 모션에 대한 여부일 뿐, 실행에 대한 여부는 아님
+
 
     private float armShakingSpeed;
     [SerializeField] private bool isArmShaking;
+
+
     [SerializeField] private GameObject leftArm, rightArm;
     private List<Vector3> leftArmVecs = new List<Vector3>();
     private List<Vector3> leftArmVecs_grip = new List<Vector3>(); // Grip 시에만 데이터 저장
@@ -45,7 +49,8 @@ public class GestureDetector : MonoBehaviour
     void Start()
     {
         StartCoroutine("FindFingerBones");
-        previousGesture = new Gesture();
+        previousRightGesture = new Gesture();
+        previousLeftGesture = new Gesture();
     }
 
     private void FixedUpdate()
@@ -94,25 +99,33 @@ public class GestureDetector : MonoBehaviour
         }
 
         // Check New Gesture (Default = RightGesuter)
-        bool hasRecognized = !currentRightGesture.Equals(new Gesture());
-        if (hasRecognized && !currentRightGesture.Equals(previousGesture))
+        bool hasRightRecognized = !currentRightGesture.Equals(new Gesture());
+        bool hasLeftRecognized = !currentLeftGesture.Equals(new Gesture());
+
+        if ((hasRightRecognized && !currentRightGesture.Equals(previousRightGesture)) || (hasLeftRecognized && !currentLeftGesture.Equals(previousLeftGesture)))
         {
             // New Gesture!
             bool isInvoke = true;
-            Debug.Log("New Gesture Found : " + currentRightGesture.name);
+            Debug.Log("New Right Gesture Found : " + currentRightGesture.name);
+            Debug.Log("New Left Gesture Found : " + currentLeftGesture.name);
 
             // Function is not work!
             if (currentRightGesture.name == "Flash_1" || currentRightGesture.name == "Flash_2" || currentRightGesture.name == "Right_Grip")
                 isInvoke = false;
 
             // Function is work!
-            if (currentRightGesture.name == "Flash_2" && (previousGesture.name == "Flash_1" || previousGesture.name == "Right_Grip"))
+            if (currentRightGesture.name == "Flash_2" && (previousRightGesture.name == "Flash_1" || previousRightGesture.name == "Right_Grip"))
                 isInvoke = CheckFlashOnOff();
 
-            previousGesture = currentRightGesture;
-            if (isInvoke)
-                currentRightGesture.onRecognized.Invoke();
+            previousRightGesture = currentRightGesture;
+            previousLeftGesture = currentLeftGesture;
+
+            //if (isInvoke)
+            //{
+            //    currentRightGesture.onRecognized.Invoke();
+            //}
         }
+
     }
 
     IEnumerator CheckOpenDoor()
@@ -181,6 +194,7 @@ public class GestureDetector : MonoBehaviour
 
         return isOn;
     }
+
 
     private void SetGripArmLists()
     {

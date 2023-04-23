@@ -11,6 +11,8 @@ TagManager:
   - ElevatorGoButton
   - ElevatorButtonOpen
   - Door
+  - SamplesInfoPanel
+  - Puzzle
   layers:
   - Default
   - TransparentFX
