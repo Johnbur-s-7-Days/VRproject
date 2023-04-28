@@ -24,6 +24,9 @@ public class Event : MonoBehaviour
                     eventObjects[0].SetActive(true);
                     eventObjects[1].SetActive(false);
                     break;
+                case 1:
+                    eventObjects[0].SetActive(false);
+                    break;
                 case 3:
                     for (int i = 0; i < eventObjects.Length; i++)
                     {
@@ -42,7 +45,7 @@ public class Event : MonoBehaviour
         audioSource.Play();
     }
 
-    private void SetEventObject()
+    private void SetEvent()
     {
         if (eventType == EVENT_TYPE.MAINEVENT)
         {
@@ -52,11 +55,14 @@ public class Event : MonoBehaviour
                     eventObjects[0].SetActive(false);
                     eventObjects[1].SetActive(true);
                     break;
+                case 1:
+                    Invoke("PlaySE", 0.8f);
+                    eventObjects[0].SetActive(true);
+                    break;
                 case 3:
+                    PlaySE();
                     for (int i = 0; i < eventObjects.Length; i++)
-                    {
                         eventObjects[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.8f, 0f, 0f));
-                    }
                     break;
             }
         }
@@ -70,8 +76,7 @@ public class Event : MonoBehaviour
             Debug.Log("Event trigger is on.");
 
             isDone = true;
-            PlaySE();
-            SetEventObject();
+            SetEvent();
         }
     }
 }
