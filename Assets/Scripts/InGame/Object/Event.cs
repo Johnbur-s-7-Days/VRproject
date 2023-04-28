@@ -19,6 +19,11 @@ public class Event : MonoBehaviour
         {
             switch (eventCode)
             {
+                case 0:
+                    PlaySE();
+                    eventObjects[0].SetActive(true);
+                    eventObjects[1].SetActive(false);
+                    break;
                 case 3:
                     for (int i = 0; i < eventObjects.Length; i++)
                     {
@@ -43,6 +48,10 @@ public class Event : MonoBehaviour
         {
             switch (eventCode)
             {
+                case 0:
+                    eventObjects[0].SetActive(false);
+                    eventObjects[1].SetActive(true);
+                    break;
                 case 3:
                     for (int i = 0; i < eventObjects.Length; i++)
                     {

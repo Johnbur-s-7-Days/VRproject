@@ -5,9 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerCtrl : MonoBehaviour
 {
-    public const int HEARTRATE_GAP = 30;
-    private const int FLASH_FLICKER_TIME_MIN = 3;
-    private const int FLASH_FLICKER_TIME_MAX = 5;
+    private const int FLASH_FLICKER_TIME_MIN = 15;
+    private const int FLASH_FLICKER_TIME_MAX = 30;
 
     private static PlayerCtrl Instance;
     public static PlayerCtrl instance
@@ -22,19 +21,16 @@ public class PlayerCtrl : MonoBehaviour
                 Instance = value;
         }
     }
-    public static NPC currentNPC = null;
 
     public new GameObject camera;
     public Rigidbody rigid;
     public Animator flashAnimator;
     public bool[] hasPuzzles;
 
-    private float detectedDis;
-    private bool isLockMove, isLockInteract;
+    private bool isLockMove;
     private bool isFlashOn, isFlashFlicking;
 
     // Temp Variables
-    NPC npc;
     Door door;
 
     void Awake()
@@ -46,7 +42,6 @@ public class PlayerCtrl : MonoBehaviour
     void Start()
     {
         hasPuzzles = new bool[DataPool.puzzleNum];
-        detectedDis = 1.5f;
         isFlashOn = isFlashFlicking = false;
 
         flashAnimator.SetBool("isOn", isFlashOn);
@@ -59,7 +54,6 @@ public class PlayerCtrl : MonoBehaviour
     {
         flashAnimator.transform.position = camera.transform.position;
         flashAnimator.transform.rotation = Quaternion.Euler(camera.transform.rotation.eulerAngles);
-        CheckNPC();
     }
 
     public void MoveCtrl(float moveSpeed)
@@ -81,26 +75,6 @@ public class PlayerCtrl : MonoBehaviour
         SetFlash(true);
         if (!isFlashFlicking)
             StartCoroutine("FlickerFlash");
-    }
-
-    public void CheckNPC()
-    {
-        // 전방에 NPC가 있는지 체크 
-        RaycastHit npc_hit;
-        if (Physics.Raycast(camera.transform.position, camera.transform.forward, out npc_hit, detectedDis, 512))
-        {
-            // NPC가 있다면 이름 표시
-            npc = npc_hit.collider.GetComponentInParent<NPC>();
-            currentNPC = npc;
-        }
-        else
-        {
-            // NPC가 없다면 이름 닫기
-            if (currentNPC != null)
-            {
-                currentNPC = null;
-            }
-        }
     }
 
     IEnumerator FlickerFlash()
