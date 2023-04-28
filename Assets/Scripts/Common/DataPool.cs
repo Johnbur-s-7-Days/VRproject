@@ -101,27 +101,16 @@ public class Frame
     }
 }
 
-/// <summary>
-/// 방탈출 요소를 해결하기 위한 아주 작은 Event (탈출 Sequence를 이루는 하나의 요소)
-/// </summary>
-public class Event
-{
-    public int code;
-    public bool isOn;
-    public bool isDone;
-
-    public Event(int _code)
-    {
-        code = _code;
-        isOn = true;
-        isDone = false;
-    }
-}
-
 public enum HAND_TYPE
 {
     LEFT,
     RIGHT
+}
+
+public enum EVENT_TYPE
+{
+    MAINEVENT,
+    SUBEVENT
 }
 
 public enum NPC_MODE
