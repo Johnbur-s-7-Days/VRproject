@@ -29,9 +29,11 @@ public class Event : MonoBehaviour
                     break;
                 case 3:
                     for (int i = 0; i < eventObjects.Length; i++)
-                    {
                         eventObjects[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.white);
-                    }
+                    break;
+                case 4:
+                    eventObjects[0].SetActive(false);
+                    eventObjects[1].SetActive(false);
                     break;
             }
         }
@@ -68,6 +70,14 @@ public class Event : MonoBehaviour
                     PlaySE();
                     for (int i = 0; i < eventObjects.Length; i++)
                         eventObjects[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.8f, 0f, 0f));
+                    break;
+                case 4:
+                    PlaySE();
+                    eventObjects[0].SetActive(true);
+                    eventObjects[1].SetActive(true);
+                    break;
+                case 5:
+                    eventObjects[0].SetActive(false);
                     break;
             }
         }
