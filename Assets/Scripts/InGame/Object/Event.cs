@@ -35,6 +35,9 @@ public class Event : MonoBehaviour
                     eventObjects[0].SetActive(false);
                     eventObjects[1].SetActive(false);
                     break;
+                case 6:
+                    eventObjects[0].SetActive(false);
+                    break;
             }
         }
     }
@@ -78,6 +81,10 @@ public class Event : MonoBehaviour
                     break;
                 case 5:
                     eventObjects[0].SetActive(false);
+                    break;
+                case 6:
+                    PlaySE();
+                    eventObjects[0].SetActive(true);
                     break;
             }
         }

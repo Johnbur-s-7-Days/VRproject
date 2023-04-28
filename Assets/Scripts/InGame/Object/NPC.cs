@@ -7,6 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class NPC : MonoBehaviour
 {
     public new AudioSource audio;
+    public bool isRunning;
 
     private void Start()
     {
@@ -16,11 +17,18 @@ public class NPC : MonoBehaviour
 
     void Update()
     {
-        if (CheckContact())
+        if (isRunning)
         {
-            audio.clip = DataPool.SEs[2];
-            audio.Play();
-            Invoke("SetDisable", 1f);
+            this.transform.position += Vector3.forward * 6f * Time.deltaTime;
+        }
+        else
+        {
+            if (CheckContact())
+            {
+                audio.clip = DataPool.SEs[2];
+                audio.Play();
+                Invoke("SetDisable", 1f);
+            }
         }
     }
 
@@ -35,5 +43,18 @@ public class NPC : MonoBehaviour
         if (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0)
             return true;
         return false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isRunning)
+            return;
+
+        if (collision.transform.tag == "Player")
+        {
+            audio.clip = DataPool.SEs[2];
+            audio.Play();
+            this.gameObject.SetActive(false);
+        }
     }
 }
