@@ -6,11 +6,20 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class NPC : MonoBehaviour
 {
+    public new AudioSource audio;
+
+    private void Start()
+    {
+        if ((audio = this.GetComponent<AudioSource>()) == null)
+            audio = this.gameObject.AddComponent<AudioSource>();
+    }
+
     void Update()
     {
         if (CheckContact())
         {
-            Debug.Log("귀신 사라짐");
+            audio.clip = DataPool.SEs[2];
+            audio.Play();
             Invoke("SetDisable", 1f);
         }
     }

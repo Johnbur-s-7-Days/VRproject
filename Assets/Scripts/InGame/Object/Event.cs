@@ -59,6 +59,11 @@ public class Event : MonoBehaviour
                     Invoke("PlaySE", 0.8f);
                     eventObjects[0].SetActive(true);
                     break;
+                case 2:
+                    PlaySE();
+                    eventObjects[0].GetComponent<Door>().isOpen = false;
+                    eventObjects[0].transform.rotation = Quaternion.Euler(Vector3.up * -180f);
+                    break;
                 case 3:
                     PlaySE();
                     for (int i = 0; i < eventObjects.Length; i++)
