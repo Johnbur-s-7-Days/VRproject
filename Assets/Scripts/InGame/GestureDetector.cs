@@ -120,10 +120,10 @@ public class GestureDetector : MonoBehaviour
             previousRightGesture = currentRightGesture;
             previousLeftGesture = currentLeftGesture;
 
-            //if (isInvoke)
-            //{
-            //    currentRightGesture.onRecognized.Invoke();
-            //}
+            if (isInvoke)
+            {
+                currentRightGesture.onRecognized.Invoke();
+            }
         }
 
     }
