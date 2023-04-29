@@ -23,15 +23,13 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     public new GameObject camera;
+    public new AudioSource audio;
     public Rigidbody rigid;
     public Animator flashAnimator;
     public bool[] hasPuzzles;
 
     private bool isLockMove;
     private bool isFlashOn, isFlashFlicking;
-
-    // Temp Variables
-    Door door;
 
     void Awake()
     {

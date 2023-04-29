@@ -70,11 +70,11 @@ public class ItemObject : MonoBehaviour
 
         if (!isCanGet)
         {
-            MapCtrl.instance.SetAudio(1);
+            //MapCtrl.instance.SetAudio(1);
             return;
         }
 
-        MapCtrl.instance.SetAudio(0);
+        //MapCtrl.instance.SetAudio(0);
         PlayerCtrl.instance.hasPuzzles[itemCode] = true;
         Destroy(this.gameObject);
     }

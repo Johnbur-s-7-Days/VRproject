@@ -20,6 +20,8 @@ public class NPC : MonoBehaviour
         if (isRunning)
         {
             this.transform.position += Vector3.forward * 6f * Time.deltaTime;
+            if (CheckContact())
+                Invoke("SetDisable", 1.5f);
         }
         else
         {
