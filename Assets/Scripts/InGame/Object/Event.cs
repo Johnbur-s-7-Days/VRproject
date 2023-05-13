@@ -12,6 +12,8 @@ public class Event : MonoBehaviour
     public GameObject[] eventObjects; // 충돌 시 상호작용할 물체
     public bool isDone;
 
+    private int audioLoopCount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +42,18 @@ public class Event : MonoBehaviour
                     break;
             }
         }
+        if (eventType == EVENT_TYPE.SUBEVENT)
+        {
+            switch (eventCode)
+            {
+                case 3:
+                    eventObjects[0].SetActive(false);
+                    break;
+                case 7:
+                    eventObjects[0].SetActive(false);
+                    break;
+            }
+        }
     }
 
     private void PlaySE()
@@ -48,6 +62,17 @@ public class Event : MonoBehaviour
             return; // 무효과음 처리
         audioSource.clip = DataPool.SEs[se_index];
         audioSource.Play();
+    }
+
+    IEnumerator PlayTelephone()
+    {
+        PlaySE();
+        if (++audioLoopCount == 3)
+            yield break;
+
+        yield return new WaitForSeconds(5f);
+
+        StartCoroutine(PlayTelephone());
     }
 
     private void SetEvent()
@@ -84,6 +109,45 @@ public class Event : MonoBehaviour
                     break;
                 case 6:
                     PlaySE();
+                    eventObjects[0].SetActive(true);
+                    break;
+            }
+        }
+        else if (eventType == EVENT_TYPE.SUBEVENT)
+        {
+            switch (eventCode)
+            {
+                case 0:
+                    audioLoopCount = 0;
+                    StartCoroutine(PlayTelephone());
+                    break;
+                case 1:
+                    for (int i = 0; i < eventObjects.Length; i++)
+                    {
+                        eventObjects[i].GetComponent<Animation>().Play("WhiteChair");
+                        eventObjects[i].GetComponent<AudioSource>().Play();
+                    }
+                    break;
+                case 2:
+                    PlaySE();
+                    break;
+                case 3:
+                    PlaySE();
+                    eventObjects[0].SetActive(true);
+                    break;
+                case 4:
+                    Invoke("PlaySE", 0.7f);
+                    eventObjects[0].GetComponent<Rigidbody>().AddForce(Vector3.forward * 3f, ForceMode.Impulse);
+                    eventObjects[0].GetComponent<Rigidbody>().AddTorque(Vector3.right * 180f);
+                    break;
+                case 5:
+                    PlaySE();
+                    break;
+                case 6:
+                    eventObjects[0].GetComponent<AudioSource>().Play();
+                    eventObjects[1].GetComponent<AudioSource>().Play();
+                    break;
+                case 7:
                     eventObjects[0].SetActive(true);
                     break;
             }
