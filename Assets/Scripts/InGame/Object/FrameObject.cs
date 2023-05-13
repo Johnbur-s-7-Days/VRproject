@@ -41,14 +41,14 @@ public class FrameObject : MonoBehaviour
                 PlayerCtrl.instance.hasPuzzles[i] = false;
                 QuestCtrl.instance.frame.hasPuzzles[i] = true;
                 QuestCtrl.instance.frame.CheckDone();
-                MapCtrl.instance.SetAudio(0);
+                //MapCtrl.instance.SetAudio(0);
                 SetPuzzleObject();
                 return;
             }
         }
 
         Debug.Log("Puzzling is failed.");
-        MapCtrl.instance.SetAudio(1);
+        //MapCtrl.instance.SetAudio(1);
     }
 
     /// <summary>

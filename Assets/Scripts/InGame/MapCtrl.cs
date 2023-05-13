@@ -18,11 +18,8 @@ public class MapCtrl : MonoBehaviour
         }
     }
 
-    public new AudioSource audio;
-
     public GameObject directLightParent;
     public GameObject mapParent;
-    public GameObject npcParent;
     public Light directLight;
     private List<GameObject> allLights = new List<GameObject>();
     private List<ReflectionProbe> reflections = new List<ReflectionProbe>();
@@ -51,10 +48,6 @@ public class MapCtrl : MonoBehaviour
                 reflections.Add(reflection);
         }
 
-        audio = this.GetComponent<AudioSource>();
-        if (audio == null)
-            audio = this.gameObject.AddComponent<AudioSource>();
-
         Debug.Log("총 " + allLights.Count + " 개의 빛 감지");
         Debug.Log("총 " + reflections.Count + " 개의 반사경 감지");
         for (int i = 0; i < allLights.Count; i++)
@@ -69,15 +62,5 @@ public class MapCtrl : MonoBehaviour
                 light.type = LightType.Point;
             }
         }
-    }
-
-    /// <summary>
-    /// 효과음을 출력하는 함수
-    /// </summary>
-    /// <param name="_SE_index">몇 번째 효과음인지에 대한 Code</param>
-    public void SetAudio(int _SE_index)
-    {
-        audio.clip = DataPool.SEs[_SE_index];
-        audio.Play();
     }
 }

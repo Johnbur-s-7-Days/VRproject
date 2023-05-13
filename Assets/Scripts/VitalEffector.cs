@@ -46,6 +46,10 @@ public class VitalEffector : MonoBehaviour
         yield return null;
 
         audioSources.AddRange(FindObjectsOfType<AudioSource>());
+        foreach (var audio in audioSources)
+        {
+            audio.spatialBlend = 1f;
+        }
     }
 
     IEnumerator TestVitalEffect()

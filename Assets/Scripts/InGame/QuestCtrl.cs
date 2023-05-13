@@ -22,17 +22,11 @@ public class QuestCtrl : MonoBehaviour
     // 게임의 액자 상태
     public Frame frame;
 
-    // 게임 이벤트 상태
-    public List<Event> events;
-
     // Start is called before the first frame update
     void Awake()
     {
         instance = this;
 
         frame = new Frame();
-        events = new List<Event>();
-        for (int i = 0; i < DataPool.eventNum; i++)
-            events.Add(new Event(i));
     }
 }
