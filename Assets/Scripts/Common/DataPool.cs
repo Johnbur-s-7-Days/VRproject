@@ -19,7 +19,7 @@ public class DataPool : MonoBehaviour
     public static short eventNum = 99;
 
     /// <summary> 액자의 퍼즐 개수 </summary>
-    public static short puzzleNum = 4;
+    public static short puzzleNum = 6;
 
     /// <summary> 액자 퍼즐(Puzzle) 데이터 </summary>
     public static List<Puzzle> puzzles = new List<Puzzle>();
@@ -86,6 +86,7 @@ public class Frame
     public Frame()
     {
         hasPuzzles = new bool[DataPool.puzzleNum];
+        isDone = false;
     }
 
     /// <summary>

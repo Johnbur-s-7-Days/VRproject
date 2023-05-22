@@ -26,7 +26,6 @@ public class PlayerCtrl : MonoBehaviour
     public new AudioSource audio;
     public Rigidbody rigid;
     public Animator flashAnimator;
-    public bool[] hasPuzzles;
 
     private bool isLockMove;
     private bool isFlashOn, isFlashFlicking;
@@ -39,7 +38,6 @@ public class PlayerCtrl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        hasPuzzles = new bool[DataPool.puzzleNum];
         isFlashOn = isFlashFlicking = false;
 
         flashAnimator.SetBool("isOn", isFlashOn);
