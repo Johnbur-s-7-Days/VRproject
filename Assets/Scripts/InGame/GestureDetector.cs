@@ -122,7 +122,10 @@ public class GestureDetector : MonoBehaviour
 
             if (isInvoke)
             {
-                currentRightGesture.onRecognized.Invoke();
+                if (currentLeftGesture.onRecognized != null)
+                    currentLeftGesture.onRecognized.Invoke();
+                if (currentRightGesture.onRecognized != null)
+                    currentRightGesture.onRecognized.Invoke();
             }
         }
 

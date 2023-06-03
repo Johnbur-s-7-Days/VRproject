@@ -60,8 +60,7 @@ public class MapCtrl : MonoBehaviour
                 light.type = LightType.Point;
             }
         }
-
-        Invoke("StartEndAnim", 1f);
+        StartEndAnim();
     }
 
     public void StartEndAnim()
@@ -71,6 +70,7 @@ public class MapCtrl : MonoBehaviour
 
     public void EndGame()
     {
+        Debug.Log("End Game");
         Application.Quit();
     }
 }
