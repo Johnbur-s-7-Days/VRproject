@@ -18,21 +18,19 @@ public class MapCtrl : MonoBehaviour
         }
     }
 
+    private const string endGame_anim = "End_Anim";
+
     public GameObject directLightParent;
     public GameObject mapParent;
     public Light directLight;
+    public Animation anim;
     private List<GameObject> allLights = new List<GameObject>();
     private List<ReflectionProbe> reflections = new List<ReflectionProbe>();
-
-    /// <summary>
-    /// 게임 속 가상 시간 (AFTERNOON_TIME = 아침 시작, NIGHT_TIME = 밤 시작, END_TIME = 하루 일과 종료)
-    /// </summary>
-    public float time;
 
     // Temp 변수들
     GameObject[] gameObjects;
     ReflectionProbe reflection;
-    Light light;
+    new Light light;
 
     private void Awake()
     {
@@ -62,5 +60,17 @@ public class MapCtrl : MonoBehaviour
                 light.type = LightType.Point;
             }
         }
+
+        Invoke("StartEndAnim", 1f);
+    }
+
+    public void StartEndAnim()
+    {
+        anim.Play(endGame_anim);
+    }
+
+    public void EndGame()
+    {
+        Application.Quit();
     }
 }

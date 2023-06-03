@@ -8,18 +8,21 @@ public class NPC : MonoBehaviour
 {
     public new AudioSource audio;
     public bool isRunning;
+    public float moveSpeed;
 
     private void Start()
     {
         if ((audio = this.GetComponent<AudioSource>()) == null)
             audio = this.gameObject.AddComponent<AudioSource>();
+        if (moveSpeed == 0f)
+            moveSpeed = 10f;
     }
 
     void Update()
     {
         if (isRunning)
         {
-            this.transform.position += Vector3.forward * 10f * Time.deltaTime;
+            this.transform.position += this.transform.forward * moveSpeed * Time.deltaTime;
             if (CheckContact())
                 Invoke("SetDisable", 1.5f);
         }

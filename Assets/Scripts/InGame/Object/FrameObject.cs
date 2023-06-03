@@ -35,6 +35,7 @@ public class FrameObject : MonoBehaviour
             if (QuestCtrl.instance.frame.CheckDone())
             {
                 // Clear
+                MapCtrl.instance.StartEndAnim();
                 Debug.Log("게임 클리어");
             }
         }
