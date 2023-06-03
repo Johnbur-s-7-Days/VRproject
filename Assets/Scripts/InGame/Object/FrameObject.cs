@@ -1,4 +1,3 @@
-using SerializableCallback;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,17 +25,16 @@ public class FrameObject : MonoBehaviour
 
             // 액자에 퍼즐을 추가하는 로직
             Debug.Log("퍼즐 성공적으로 추가, Puzzle Code : " + puzzle.itemCode);
-            hasPuzzles[puzzle.itemCode] = false;
+            QuestCtrl.instance.frame.hasPuzzles[puzzle.itemCode] = true;
+            hasPuzzles[puzzle.itemCode] = true;
             Destroy(puzzle.gameObject);
             SetPuzzleObject();
             //MapCtrl.instance.SetAudio(0);
 
-            QuestCtrl.instance.frame.hasPuzzles[puzzle.itemCode] = true;
             if (QuestCtrl.instance.frame.CheckDone())
             {
                 // Clear
                 MapCtrl.instance.StartEndAnim();
-                Debug.Log("게임 클리어");
             }
         }
     }
@@ -48,7 +46,7 @@ public class FrameObject : MonoBehaviour
     {
         for (int i = 0; i < DataPool.puzzleNum; i++)
         {
-            if (QuestCtrl.instance.frame.hasPuzzles[i])
+            if (hasPuzzles[i])
                 puzzleObjects[i].SetActive(true);
             else
                 puzzleObjects[i].SetActive(false);

@@ -7,7 +7,7 @@ using System.IO.Ports;
 public class SensorManager : MonoBehaviour
 {
 
-    SerialPort arduino = new SerialPort("\\\\.\\COM4", 115200);
+    SerialPort arduino = new SerialPort("\\\\.\\COM3", 115200);
     private string data;
     public static int HeartRate;
     public static float TempRate;
