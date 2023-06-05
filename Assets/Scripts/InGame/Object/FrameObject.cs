@@ -23,8 +23,8 @@ public class FrameObject : MonoBehaviour
             if (puzzle == null)
                 return;
 
-            // ¾×ÀÚ¿¡ ÆÛÁñÀ» Ãß°¡ÇÏ´Â ·ÎÁ÷
-            Debug.Log("ÆÛÁñ ¼º°øÀûÀ¸·Î Ãß°¡, Puzzle Code : " + puzzle.itemCode);
+            // ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½, Puzzle Code : " + puzzle.itemCode);
             QuestCtrl.instance.frame.hasPuzzles[puzzle.itemCode] = true;
             hasPuzzles[puzzle.itemCode] = true;
             Destroy(puzzle.gameObject);
@@ -40,7 +40,7 @@ public class FrameObject : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇöÀç ¾×ÀÚÀÇ ÆÛÁñ »óÅÂ¸¦ Object·Î Ç¥ÇöÇÏ´Â ÇÔ¼ö
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ Objectï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     /// </summary>
     public void SetPuzzleObject()
     {

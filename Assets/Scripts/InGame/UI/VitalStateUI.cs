@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class VitalStateUI : MonoBehaviour
 {
-    private bool isVisual = false;
     public TextMeshProUGUI heartratetxt;
     public TextMeshProUGUI tempratetxt;
 

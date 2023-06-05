@@ -39,4 +39,6 @@ public class ItemObject : MonoBehaviour
         // PlayerCtrl.instance.hasPuzzles[itemCode] = true;
         // Destroy(this.gameObject);
     }
+
+    
 }

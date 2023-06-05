@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MapCtrl : MonoBehaviour
 {
+    
     private static MapCtrl Instance;
     public static MapCtrl instance
     {
@@ -27,7 +28,7 @@ public class MapCtrl : MonoBehaviour
     private List<GameObject> allLights = new List<GameObject>();
     private List<ReflectionProbe> reflections = new List<ReflectionProbe>();
 
-    // Temp º¯¼öµé
+    // Temp ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     GameObject[] gameObjects;
     ReflectionProbe reflection;
     new Light light;
@@ -46,8 +47,8 @@ public class MapCtrl : MonoBehaviour
                 reflections.Add(reflection);
         }
 
-        Debug.Log("ÃÑ " + allLights.Count + " °³ÀÇ ºû °¨Áö");
-        Debug.Log("ÃÑ " + reflections.Count + " °³ÀÇ ¹Ý»ç°æ °¨Áö");
+        Debug.Log("ï¿½ï¿½ " + allLights.Count + " ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+        Debug.Log("ï¿½ï¿½ " + reflections.Count + " ï¿½ï¿½ï¿½ï¿½ ï¿½Ý»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         for (int i = 0; i < allLights.Count; i++)
             allLights[i].gameObject.SetActive(true);
         for (int i = 0; i < reflections.Count; i++)
@@ -60,7 +61,7 @@ public class MapCtrl : MonoBehaviour
                 light.type = LightType.Point;
             }
         }
-        StartEndAnim();
+        //StartEndAnim();
     }
 
     public void StartEndAnim()

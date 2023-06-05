@@ -86,32 +86,31 @@ public class InventoryUI : MonoBehaviour
     //DropItem
     private void OnTriggerEnter(Collider CollisionPuzzle)
     {
-        if(CollisionPuzzle.gameObject.CompareTag("Puzzle"))
+        if(CollisionPuzzle.transform.tag.Equals("Puzzle"))
         {
-            for (int index = 0; index < 5; index++)
+            ItemObject puzzle = CollisionPuzzle.transform.GetComponent<ItemObject>();
+            if (puzzle == null)
+                return;
+
+            GameObject newImage = Instantiate(imagePrefab, _content);
+
+            AudioSource.PlayClipAtPoint(DropItemClip, newImage.transform.position);
+
+            Image imageComponent = newImage.GetComponent<Image>();
+            if (imageComponent != null)
             {
-                string Puzzlename = "Puzzle" + index;
-                if (CollisionPuzzle.name == Puzzlename)
+                string Puzzlename = "Puzzle" + puzzle.itemCode;
+                Sprite puzzleimg = Resources.Load<Sprite>("Image/Puzzle/" + Puzzlename);
+                if (puzzleimg != null)
                 {
-                    GameObject newImage = Instantiate(imagePrefab, _content);
-
-                    AudioSource.PlayClipAtPoint(DropItemClip, newImage.transform.position);
-
-                    // 생성된 이미지 오브젝트의 Image 컴포넌트에 이미지를 설정
-                    Image imageComponent = newImage.GetComponent<Image>();
-                    if (imageComponent != null)
-                    {
-                        Sprite puzzleimg = Resources.Load<Sprite>("Image/Puzzle/" + Puzzlename);
-                        if (puzzleimg != null)
-                        {
-                            imageComponent.sprite = puzzleimg;
-                            imageComponent.name = Puzzlename;
-                        }
-                    }
+                    imageComponent.sprite = puzzleimg;
+                    imageComponent.name = Puzzlename;
                 }
             }
+
+            Destroy(puzzle.gameObject);
         }
-        Destroy(CollisionPuzzle.gameObject);
+       
     }
 
 
@@ -124,21 +123,23 @@ public class InventoryUI : MonoBehaviour
             RectTransform currentImg = GetCurrentChild(); // 현재 보이는 이미지
             string currentImgName = currentImg.gameObject.name;
             
-
             //생성 위치 설정
             Vector3 centerPos = currentImg.TransformPoint(currentImg.rect.center);
-            centerPos.y += 0.5f;
-            centerPos.x += 0.5f;
+            centerPos.y += 0.3f;
+            centerPos.x -= 0.4f;
 
             GameObject currentPuzzle = Resources.Load<GameObject>("Puzzles/" + currentImgName);
-            GameObject clonePuzzle = Instantiate(currentPuzzle, centerPos, Quaternion.identity);
-            clonePuzzle.name = currentImgName;
+            if (currentPuzzle != null)
+            {
+                GameObject clonePuzzle = Instantiate(currentPuzzle, centerPos, Quaternion.identity);
+                clonePuzzle.name = currentImgName;
 
-            Rigidbody puzzleRb = clonePuzzle.GetComponent<Rigidbody>();
-            if (puzzleRb != null) { puzzleRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); }
+                Rigidbody puzzleRb = clonePuzzle.GetComponent<Rigidbody>();
+                if (puzzleRb != null) { puzzleRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); }
 
-            Destroy(currentImg.gameObject);
-            Debug.Log("아이템 삭제");
+                Destroy(currentImg.gameObject);
+                Debug.Log("아이템 삭제");
+            }
 
         }
     }

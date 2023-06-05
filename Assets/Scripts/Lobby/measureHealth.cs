@@ -15,7 +15,6 @@ public class measureHealth : MonoBehaviour
 
     void Start()
     {
-        time = this.time;
         panelCanvasGroup = GetComponent<CanvasGroup>();
         this.secnum.text = string.Format("{0}",this.time);
         this.StartCoroutine(this.waitMeasure());
