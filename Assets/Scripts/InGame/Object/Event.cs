@@ -75,7 +75,7 @@ public class Event : MonoBehaviour
         StartCoroutine(PlayTelephone());
     }
 
-    private void SetEvent()
+    public void SetEvent()
     {
         if (eventType == EVENT_TYPE.MAINEVENT)
         {
