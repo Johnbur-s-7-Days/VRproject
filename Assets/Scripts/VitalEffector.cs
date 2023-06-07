@@ -12,16 +12,18 @@ public class VitalEffector : MonoBehaviour
     private List<AudioSource> audioSources = new List<AudioSource>();
     private float temperature_cur, temperature_min, temperature_max;
 
+    public SensorManager sensordata;
+
     // Start is called before the first frame update
     void Start()
     {
         volume.profile.TryGetSettings(out vignette);
-        heartRate_cur = SensorManager.HeartRate;
-        heartRate_min = SensorManager.HeartRate_Min;
-        heartRate_max = SensorManager.HeartRate_Max;
-        temperature_cur = SensorManager.TempRate;
-        temperature_min = SensorManager.TempRate_Min;
-        temperature_max = SensorManager.TempRate_Max;
+        heartRate_cur = sensordata.HeartRate;
+        heartRate_min = sensordata.HeartRate_Min;
+        heartRate_max = sensordata.HeartRate_Max;
+        temperature_cur = sensordata.TempRate;
+        temperature_min = sensordata.TempRate_Min;
+        temperature_max = sensordata.TempRate_Max;
 
         StartCoroutine(TestVitalEffect());
         StartCoroutine(FindAllAudios());
@@ -56,9 +58,9 @@ public class VitalEffector : MonoBehaviour
     {
         while (true)
         {
-            SetSightEffect(Mathf.Lerp(0f, 1f, (heartRate_cur - heartRate_min) / (heartRate_max - heartRate_min)));
-            SetEarEffect(Mathf.Lerp(1f, 1.5f, (temperature_cur - temperature_min) / (temperature_max - temperature_min)));
-            yield return null;
+            // SetSightEffect(Mathf.Lerp(0f, 1f, (heartRate_cur - heartRate_min) / (heartRate_max - heartRate_min)));
+            // SetEarEffect(Mathf.Lerp(1f, 1.5f, (temperature_cur - temperature_min) / (temperature_max - temperature_min)));
+            // yield return null;
         }
     }
 }

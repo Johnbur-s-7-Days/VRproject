@@ -7,52 +7,57 @@ using UnityEngine.SceneManagement;
 
 public class measureHealth : MonoBehaviour
 {
-    // Start is called before the first frame update
-    
+   
     public float time;
     public float fadeDuration;
-    public TMP_Text secnum;
+
+    public TMP_Text sec_num;
+    public TMP_Text heart_txt;
+    public TMP_Text temp_txt;
 
     public GameObject measureUI;
     public GameObject ResultUI;
 
+    public SensorManager sensorData;
 
     void Start()
     {
-        this.StartCoroutine(this.waitMeasure());
+        ResultUI.GetComponent<CanvasGroup>().alpha = 0f;
+        ResultUI.SetActive(false);
+        StartCoroutine(waitMeasure());
     }
 
     public void RestartBtnClick()
     {
-        StartCoroutine(FadeOutCoroutine(ResultUI, measureUI, fadeDuration));
-        //StartCoroutine(waitMeasure());
+        StartCoroutine(FadeCoroutine(ResultUI, measureUI, fadeDuration));
+        StartCoroutine(waitMeasure());
     }
 
     public void GamestartBtnClick()
     {
-        StartCoroutine(FadeOutCoroutine(ResultUI,measureUI, fadeDuration));
+        StartCoroutine(FadeCoroutine(ResultUI,measureUI, fadeDuration));
         SceneManager.LoadScene("QA_Office_Nojun");
     }
-
 
     private IEnumerator waitMeasure()
     {
         float delta = time;
-        while(true)
+        sensorData.isReadingData = true;
+        while(delta > 0)
         {
-            delta -= Time.deltaTime;
-            this.secnum.text = string.Format ("{0}",(int)delta);
-            if (delta <= 0)
-            {
-                StartCoroutine(FadeOutCoroutine(measureUI, ResultUI,  fadeDuration));
-                break;
-            }
-            yield return null;
+            sec_num.text = delta.ToString();
+            yield return new WaitForSeconds(1f);
+            delta--;
         }
+        sensorData.isReadingData = false;
 
+        heart_txt.text = sensorData.HeartRate.ToString();
+        temp_txt.text = sensorData.TempRate.ToString();
+
+        StartCoroutine(FadeCoroutine(measureUI, ResultUI, fadeDuration));
     }
 
-    private IEnumerator FadeOutCoroutine(GameObject FadeoutPanel, GameObject FadeinPanel, float duration)
+    private IEnumerator FadeCoroutine(GameObject FadeoutPanel, GameObject FadeinPanel, float duration)
     {
         CanvasGroup targetCanvasGroup = FadeoutPanel.GetComponent<CanvasGroup>();
         float originalAlpha = targetCanvasGroup.alpha;
@@ -63,7 +68,6 @@ public class measureHealth : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float fadeRatio = elapsedTime / duration;
 
-            // 패널 투명도 조절
             float newAlpha = Mathf.Lerp(originalAlpha, 0f, fadeRatio);
             targetCanvasGroup.alpha = newAlpha;
 
@@ -75,20 +79,19 @@ public class measureHealth : MonoBehaviour
             StartCoroutine(FadeInCoroutine(FadeinPanel, duration));
     }
 
-    private IEnumerator FadeInCoroutine(GameObject Panel, float duration)
+    private IEnumerator FadeInCoroutine(GameObject FadeinPanel, float duration)
     {
-        CanvasGroup targetCanvasGroup = Panel.GetComponent<CanvasGroup>();
+        CanvasGroup targetCanvasGroup = FadeinPanel.GetComponent<CanvasGroup>();
         float originalAlpha = targetCanvasGroup.alpha;
         float elapsedTime = 0f;
 
-        Panel.SetActive(true);
+        FadeinPanel.SetActive(true);
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float fadeRatio = elapsedTime / duration;
 
-            // 패널 투명도 조절
             float newAlpha = Mathf.Lerp(originalAlpha, 1f, fadeRatio);
             targetCanvasGroup.alpha = newAlpha;
 

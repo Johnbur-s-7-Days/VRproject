@@ -2,71 +2,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO.Ports;
-
+using System;
 
 public class SensorManager : MonoBehaviour
 {
+    SerialPort arduino;
+    public static SensorManager instance;
+    
+    private int bpmCount, tempCount;
+    private int totalBPM, totalTEMP;
+    private int h_rate,t_rate;
 
-    SerialPort arduino = new SerialPort("\\\\.\\COM3", 115200);
-    private string data;
-    public static int HeartRate;
-    public static float TempRate;
-    public static int HeartRate_Min;
-    public static int HeartRate_Max;
-    public static float TempRate_Min;
-    public static float TempRate_Max;
+    public bool isReadingData {get; set;}
+    public int HeartRate { get; private set; } 
+    public int TempRate { get; private set; }
 
+    public int HeartRate_Min { get; private set; }
+    public int HeartRate_Max { get; private set; }
+    public int TempRate_Min { get; private set; }
+    public int TempRate_Max { get; private set ; }
+
+    private void Awake()
+    {
+        if(SensorManager.instance == null)
+            SensorManager.instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        arduino = new SerialPort("\\\\.\\COM3", 115200);
         arduino.Open();
-        HeartRate = 0;
-        TempRate = 0;
         HeartRate_Min = 200;
-        HeartRate_Max = 50;
-        TempRate_Min = 40.0f;
-        TempRate_Max = 10.0f;
+        TempRate_Min = 200;
     }
-
 
     void Update()
     {
-        data = arduino.ReadLine();
-        string[] datas = data.Split(',');
-        string BPM = datas[0];
-        string TEMP = datas[3];
+        StartCoroutine(ReadArduinoCouroutine());
+    }
 
-        HeartRate = 0;
-        TempRate = 0.0f;
-
-        for (int i = 0; i < BPM.Length; i++)
+    private IEnumerator ReadArduinoCouroutine()
+    {
+        while (isReadingData)
         {
-            HeartRate = HeartRate * 10 + (BPM[i] - '0');
+            if (arduino.IsOpen && arduino.BytesToRead > 0)
+            {
+                string data = arduino.ReadLine();
+                string[] datas = data.Split(',');
+                string BPM = datas[0];
+                string TEMP = datas[3];
+                int bmpvalue;
+                float tempvalue;
+
+                if (int.TryParse(BPM, out bmpvalue))
+                {
+                    if(bmpvalue > 30 && bmpvalue < 120)
+                    {
+                        totalBPM += bmpvalue; 
+                        HeartRate_Max = Math.Max(HeartRate_Max,bmpvalue);
+                        HeartRate_Min = Math.Min(HeartRate_Min,bmpvalue);
+                        bpmCount++;
+                    }
+                    
+                }
+
+                if (float.TryParse(TEMP, out tempvalue))
+                {
+                    if(tempvalue > 0.0f && tempvalue < 50.0f)
+                    {
+                        totalTEMP += (int)tempvalue;
+                        TempRate_Max = Math.Max(TempRate_Max,(int)tempvalue);
+                        TempRate_Min = Math.Min(TempRate_Min,(int)tempvalue);
+                        tempCount++;
+                    }
+                }
+            }
+            if (bpmCount > 0) HeartRate = totalBPM / bpmCount;
+            if (tempCount > 0) TempRate = totalTEMP / tempCount;
+            Debug.Log(HeartRate);
+
+            yield return null;
         }
-
-        TempRate = float.Parse(TEMP);
-
-        //MIN MAX값 설정
-        if (HeartRate >= 50 && HeartRate < 140)
-        {
-           if(HeartRate_Min > HeartRate)
-               HeartRate_Min = HeartRate;
-           if(HeartRate_Max < HeartRate)
-                HeartRate_Max = HeartRate;
-        }
-        else
-        {
-            Debug.Log("센서 위치 재조정 바람.");
-            HeartRate = 0;
-        }
-
-        if (TempRate_Min > TempRate)
-            TempRate_Min = TempRate;
-        if (TempRate_Max < TempRate)
-            TempRate_Max = TempRate;
-
 
 
     }
+
 }
