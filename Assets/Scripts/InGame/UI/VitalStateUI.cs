@@ -6,30 +6,35 @@ using UnityEngine.UI;
 
 public class VitalStateUI : MonoBehaviour
 {
-    public TextMeshProUGUI heartratetxt;
-    public TextMeshProUGUI tempratetxt;
+    public TextMeshProUGUI hearttxt;
+    public TextMeshProUGUI temptxt;
 
     [SerializeField]
     private GameObject vitalUI;
-
-    [SerializeField]
-    private GameObject targetHand;
+    public SensorManager sensorData;
 
     // Start is called before the first frame update
     void Start()
     {
-        heartratetxt.text = " ";
-        tempratetxt.text = " ";
+        hearttxt.text = " ";
+        temptxt.text = " ";
     }
 
     void Update()
     {
-        heartratetxt.text = SensorManager.HeartRate.ToString();
-        tempratetxt.text = SensorManager.TempRate.ToString();
+
+        sensorData.isReadingData = vitalUI.activeSelf;
+
+        if(sensorData.isReadingData)
+        {            
+            hearttxt.text = sensorData.HeartRate.ToString();
+            temptxt.text = sensorData.TempRate.ToString();
+        }
+
     }
 
-    public void VitalVisibility(bool state)
-    {
-        vitalUI.SetActive(state);
-    }
+
+
+
+
 }
