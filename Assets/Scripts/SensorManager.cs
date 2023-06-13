@@ -85,7 +85,6 @@ public class SensorManager : MonoBehaviour
             yield return null;
         }
 
-
     }
 
 }

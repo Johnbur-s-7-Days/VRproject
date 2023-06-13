@@ -18,22 +18,21 @@ public class VitalStateUI : MonoBehaviour
     {
         hearttxt.text = " ";
         temptxt.text = " ";
+        sensorData.isReadingData = false;
     }
 
     void Update()
     {
-
-        sensorData.isReadingData = vitalUI.activeSelf;
-
-        if(sensorData.isReadingData)
-        {            
+        if(vitalUI.activeSelf)
+        {
+            sensorData.isReadingData = true;
             hearttxt.text = sensorData.HeartRate.ToString();
             temptxt.text = sensorData.TempRate.ToString();
         }
-
+        else sensorData.isReadingData = false;
+        
     }
-
-
+    
 
 
 
