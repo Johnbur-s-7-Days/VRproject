@@ -26,7 +26,7 @@ public class InventoryUI : MonoBehaviour
     private int _currentChildIndex = 0;
     private float _scrollVal = 0;
 
-    public GameObject imagePrefab; // »ý¼ºÇÒ ÀÌ¹ÌÁöÀÇ ÇÁ¸®ÆÕ
+    public GameObject imagePrefab; 
     public float jumpForce = 1f;
 
     public AudioClip DropItemClip; 
@@ -116,14 +116,14 @@ public class InventoryUI : MonoBehaviour
 
     public void GetItem()
     {
-        //¾Æ¹«°Íµµ ´ã±ä°Ô ¾øÀ¸¸é ¸®ÅÏ.
+        //ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (_content.childCount == 0) return;
         else 
         {
-            RectTransform currentImg = GetCurrentChild(); // ÇöÀç º¸ÀÌ´Â ÀÌ¹ÌÁö
+            RectTransform currentImg = GetCurrentChild(); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½
             string currentImgName = currentImg.gameObject.name;
             
-            //»ý¼º À§Ä¡ ¼³Á¤
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
             Vector3 centerPos = currentImg.TransformPoint(currentImg.rect.center);
             centerPos.y += 0.3f;
             centerPos.x -= 0.4f;
@@ -138,7 +138,7 @@ public class InventoryUI : MonoBehaviour
                 if (puzzleRb != null) { puzzleRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); }
 
                 Destroy(currentImg.gameObject);
-                Debug.Log("¾ÆÀÌÅÛ »èÁ¦");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             }
 
         }

@@ -12,7 +12,6 @@ public class VitalStateUI : MonoBehaviour
     [SerializeField]
     private GameObject vitalUI;
     public SensorManager sensorData;
-    public bool isVitalOn;
 
     // Start is called before the first frame update
     void Start()
@@ -23,17 +22,19 @@ public class VitalStateUI : MonoBehaviour
 
     void Update()
     {
-        sensorData.isReadingData = isVitalOn;
+
+        sensorData.isReadingData = vitalUI.activeSelf;
+
         if(sensorData.isReadingData)
         {            
             hearttxt.text = sensorData.HeartRate.ToString();
             temptxt.text = sensorData.TempRate.ToString();
         }
+
     }
 
-    private void setVitalActive(bool isVitalOn)
-    {
-        vitalUI.SetActive(isVitalOn);
-    }
+
+
+
 
 }
